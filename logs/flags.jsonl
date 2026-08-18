@@ -1,0 +1,1 @@
+{"action": "STOP \u2014 consult PI (Principle 6: never tune toward the band)", "band": [300000, 600000], "code_commit": "no-git", "event_id": "ee23afd2805f3aa2", "kind": "out_of_band", "phase": "1", "quantity": "papers_kept", "ts": "2026-08-18T23:36:10+00:00", "undone": false, "value": 269814}

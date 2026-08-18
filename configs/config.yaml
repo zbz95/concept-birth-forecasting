@@ -1,0 +1,207 @@
+# Concept-Birth Forecasting — master configuration
+# Plan: PLAN.md v2.1
+#
+# BINDING RULE (Principle 5): every threshold lives here. Changing a default
+# requires a change to this file, which changes the config hash, which
+# invalidates every downstream artifact's manifest.
+#
+# BINDING RULE (Principle 6, Goodhart guard): the `expected_bands` block below
+# is DIAGNOSTIC ONLY. No parameter in this file may ever be tuned to move a
+# measured quantity into a band. Out-of-band -> STOP, report, consult PI.
+
+config_version: "2.1.0"
+
+# --------------------------------------------------------------------------
+# Phase 1 — Corpus
+# --------------------------------------------------------------------------
+corpus:
+  source: kaggle_snapshot
+  kaggle_ref: "Cornell-University/arxiv"
+  kaggle_version: 299                 # snapshot lastUpdated 2026-08-15
+  snapshot_file: "arxiv-metadata-oai-snapshot.json"
+  categories: [cs.CL, cs.CV]          # primary OR cross-listed
+  cross_list_ok: true
+  date_field: "versions[0].created"   # v1 submission date ONLY
+  corpus_cutoff: "2025-12-31"         # hard; drops partial 2026
+  drop_withdrawn: true
+  dedupe_on: "id"
+
+# --------------------------------------------------------------------------
+# Phase 2 — Candidate generation (permanent coinage ledger)
+# --------------------------------------------------------------------------
+candidates:
+  strip_latex: true                   # BEFORE any extraction
+  extractors: [rake, noun_chunks, ngrams]
+  ngram_range: [2, 3]
+  noun_chunk_pattern: "ADJ*NOUN+"
+  normalization: "lower+light_lemma"  # no aggressive stemming
+  provenance_tagged: true             # extractor agreement -> Phase 3 feature
+
+  # PI decision 2026-08-19: postings are built by DICTIONARY RE-SCAN.
+  # Extractors nominate CANDIDATES only; once a candidate exists, every
+  # abstract is re-scanned by lemmatized string match to build complete
+  # postings. Rationale: crystallization years must not inherit extractor
+  # recall variance. Coinage = first re-scan occurrence (>= extractor recall).
+  postings_mode: "dictionary_rescan"
+  rescan_match: "lemmatized_token_sequence"
+  rescan_word_boundary: true
+
+# --------------------------------------------------------------------------
+# Phase 3 — Filtering + normalization (modeling vocabulary)
+# --------------------------------------------------------------------------
+vocabulary:
+  min_total_freq: 9                   # papers; re-evaluated per origin as vocab_T
+  c_value_enabled: true
+  c_value_min: null                   # set at Phase 3 gate, with PI
+  pattern_kills:
+    verb_led: true
+    ordinals: true
+    stopword_straddlers: true
+    generic_heads: true
+  kill_log: "logs/kills.jsonl"        # append-only, undo column
+
+merges:
+  # Evidence-dated membership. Global identity, time-gated activation.
+  sources:
+    string_variants: {enabled: true, effective: "timeless"}
+    schwartz_hearst: {enabled: true, effective: "first_attesting_v1_date"}
+    human_approved:  {enabled: true, effective: "cited_evidence_date"}
+    embedding_similarity:
+      enabled: true
+      creates_merges: false           # HARD FALSE. Nominates to human queue only.
+      role: "nominator"
+  merge_gap_flag_years: 3             # coinage-date gap forcing human review
+  # A paper containing >=2 members of one cluster contributes 1 to that
+  # cluster's yearly count, not N. (PI-confirmed reading, 2026-08-19.)
+  paper_dedupe_within_cluster: true
+  merge_log: "logs/merges.jsonl"      # append-only, undo column
+
+llm_judge:
+  enabled: null                       # PI decides at the Phase 3 STOP-AND-ASK
+  criteria: ["not_a_noun_phrase", "generic"]
+  forbidden_criteria: ["familiarity", "novelty", "importance"]
+  audit_sample_n: 200
+  report_both_arms: true
+
+# --------------------------------------------------------------------------
+# Phase 4 — Birth registry
+# --------------------------------------------------------------------------
+registry:
+  k_year: 5
+  m: 2
+  # PI-confirmed reading, 2026-08-19: >= k_year papers in EACH of the m years
+  # (not >= k_year*m pooled across the window).
+  window_rule: "per_year"             # {per_year | pooled}
+  min_groups: 2
+  # PI-confirmed reading, 2026-08-19: author-group components computed ONCE,
+  # pooled over all qualifying papers in t..t+m-1 (not per-year).
+  groups_scope: "pooled_window"       # {pooled_window | per_year}
+  author_match: "authors_parsed_exact"
+  decline_rule: {reuses: [k_year, m]} # < k_year/yr for m consecutive yrs
+  censoring_index: "t+m-1"            # complete through last_complete - (m-1)
+  last_complete_year: 2025
+  complete_through: 2024              # = 2025 - (2-1)
+  rolling_12mo_dating: false          # v2 option, off by default
+  audit_sample_n: 200
+  spot_check_n: 20
+
+# --------------------------------------------------------------------------
+# Phase 5 — Graph construction
+# --------------------------------------------------------------------------
+graph:
+  graph_window: 3                     # trailing years for graph_T
+  max_concepts_per_paper: 25          # projection layer ONLY; keep lowest-DF
+  cap_keeps: "lowest_document_frequency"
+  weighting: "fractional"             # each paper spends exactly 1.0 edge mass
+  binarize_min_weight: 1.0
+  time_decay: {enabled: false, half_life_years: null}   # robustness, off
+  # INVARIANT (assert at build): total edge mass == n papers with >=2 concepts
+
+# --------------------------------------------------------------------------
+# Phase 6 — Regions
+# --------------------------------------------------------------------------
+regions:
+  backend: "cpm"                      # pluggable: {cpm | link_communities}
+  cpm_k: [3, 4, 5]
+  cpm_impl: "custom_kclique"          # graph-tool not pip-installable; NOT networkx
+  max_region_share: 0.20              # degeneracy guard on largest region
+  lineage_jaccard: 0.30
+  feature_spec_signed_off: false      # HARD GATE before Phase 6 implementation
+
+embedder:
+  # Per-origin, from scratch, CPU. No pretrained encoders anywhere, ever.
+  algo: "word2vec"                    # or fasttext
+  pretrained_allowed: false           # HARD FALSE
+  dim: 200
+  window: 5
+  min_count: 5
+  epochs: 5
+  seed: 20260819
+
+# --------------------------------------------------------------------------
+# Phase 7 — Attachment + targets
+# --------------------------------------------------------------------------
+attachment:
+  profile_n_papers: 20                # first N chronological papers
+  profile_rank_by: "lift"             # NEVER raw counts (hub flooding)
+  attach_top_k: 10
+  attach_min_overlap: 3               # arm 1
+  p_attach: 1.0e-3                    # arm 2: hypergeometric tail
+  multi_attachment: true              # 1.0 target mass splits fractionally
+  # INVARIANT (assert): total target mass == n attached births
+  dual_attachment_floor: 10           # C2 gate: births/yr on tune origins
+  relaxed_pair_rule: {enabled: false, overlaps: [3, 2]}   # armed only by C2 gate
+
+# --------------------------------------------------------------------------
+# Phase 8 — Models
+# --------------------------------------------------------------------------
+models:
+  null_model: "poisson_glm"
+  challengers: ["poisson_glm_structure", "gbm_poisson"]
+  # Null boundary: null sees the unit's OWN count series only (exposure,
+  # velocity, YoY-quarter acceleration, confirmed-birth persistence).
+  # Challenger adds topology / cross-unit / people. Borderline -> null.
+  ablation_ladder: ["null", "+semantic_relational", "+social", "+embedding"]
+  seeds: [0, 1, 2, 3, 4]
+
+# --------------------------------------------------------------------------
+# Phase 9 — Evaluation
+# --------------------------------------------------------------------------
+evaluation:
+  origin_step: 1
+  horizons: [1, 2]
+  origins_tune: [2014, 2018]          # inclusive range
+  origins_test: [2019, 2024]          # inclusive range
+  power_floor: 50                     # min crystallizations/yr in test origins
+  # Staged unsealing — each origin opened EXACTLY ONCE. As of 2026-08-19 the
+  # resolvable set is h=1 origins 2019-2023 and h=2 origins 2019-2022.
+  unsealing:
+    resolvable_now:  {h1: [2019, 2023], h2: [2019, 2022]}
+    unseal_2027_01:  {h1: [2024, 2024], h2: [2023, 2023]}
+    unseal_2028_01:  {h2: [2024, 2024]}
+  bootstrap: {method: "block", blocks: ["region_lineage", "year"], n: 2000}
+  regime_splits: [2017, 2020]
+  headline_metric: "summed_per_unit_log_score_gain_over_null"
+  roc_as_headline: false              # HARD FALSE
+
+# --------------------------------------------------------------------------
+# Diagnostic tripwires — NOT TARGETS (Principle 6). Never tune toward these.
+# --------------------------------------------------------------------------
+expected_bands:
+  phase1_papers_kept:        [300000, 600000]
+  phase3_vocab_clusters:     [20000, 60000]
+  phase4_crystallizations_yr: [100, 1000]
+  phase5_nodes:              [15000, 40000]
+  phase5_edges:              [100000, 1000000]
+  phase6_regions_k4:         [100, 1000]
+  phase6_region_size:        [10, 300]
+  phase6_coverage:           [0.30, 0.70]
+
+# --------------------------------------------------------------------------
+# Runtime
+# --------------------------------------------------------------------------
+runtime:
+  n_workers: 6                        # of 8 cores
+  mem_budget_gb: 11
+  storage: "parquet+duckdb"
+  random_seed: 20260819
