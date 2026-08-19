@@ -45,6 +45,8 @@ candidates:
   postings_mode: "dictionary_rescan"
   rescan_match: "lemmatized_token_sequence"
   rescan_word_boundary: true
+  max_candidate_tokens: 5             # RAKE/noun-chunk phrases longer than this are not nominated
+  spacy_model: "en_core_web_sm"       # tagger+lemmatizer only; parser/NER disabled
 
 # --------------------------------------------------------------------------
 # Phase 3 — Filtering + normalization (modeling vocabulary)
@@ -188,7 +190,11 @@ evaluation:
 # Diagnostic tripwires — NOT TARGETS (Principle 6). Never tune toward these.
 # --------------------------------------------------------------------------
 expected_bands:
-  phase1_papers_kept:        [300000, 600000]
+  # RECALIBRATED 2026-08-19 by PI decision after the first Phase 1 run measured
+  # 269,814 (filter + date field verified correct; shortfall is a property of the
+  # corpus, not a defect). Band now guards against snapshot drift / filter
+  # regression, not against the original estimate. Original band: [300000, 600000].
+  phase1_papers_kept:        [255000, 285000]
   phase3_vocab_clusters:     [20000, 60000]
   phase4_crystallizations_yr: [100, 1000]
   phase5_nodes:              [15000, 40000]

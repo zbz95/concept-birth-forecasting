@@ -1,0 +1,15 @@
+   20,000/269,814     224 docs/s  eta  18.6 min
+   40,000/269,814     219 docs/s  eta  17.5 min
+   60,000/269,814     200 docs/s  eta  17.5 min
+   80,000/269,814     190 docs/s  eta  16.6 min
+  100,000/269,814     180 docs/s  eta  15.7 min
+  120,000/269,814     168 docs/s  eta  14.9 min
+  140,000/269,814     165 docs/s  eta  13.1 min
+  160,000/269,814     160 docs/s  eta  11.5 min
+  180,000/269,814     154 docs/s  eta   9.7 min
+  200,000/269,814     152 docs/s  eta   7.7 min
+  220,000/269,814     149 docs/s  eta   5.6 min
+  240,000/269,814     142 docs/s  eta   3.5 min
+  260,000/269,814     143 docs/s  eta   1.1 min
+  269,814/269,814     144 docs/s  eta   0.0 min
+wrote data/interim/tokens.parquet (123 MB)
