@@ -242,6 +242,29 @@ attachment:
 # Phase 8 — Models
 # --------------------------------------------------------------------------
 models:
+  # PI decision 2026-08-20: THE RATE MODEL IS DISCARDED as the primary task.
+  # Predicting how many births a region receives failed on calibration (null
+  # 1.06, challengers 0.80-0.50) and the ablation ladder did not separate. The
+  # primary task is now Layer 2 -- parent localization: given a region, name K
+  # nodes and predict that the next birth attaches among them. The plan already
+  # called ranked node lists the headline deliverable; this makes them the whole
+  # deliverable. Rate-model artifacts are archived under
+  # data/models/archive_rate_model/ and its report retained, not deleted.
+  primary_task: "layer2_localization"
+  rate_model: "archived"
+
+localization:
+  K: [5, 10, 20]                      # nodes named per region
+  primary_k: 4                        # CPM scale for the headline
+  primary_K: 10
+  baselines: ["random", "degree", "velocity"]   # deterministic top-N, stricter
+                                                # than the plan's weighted-random
+  within_region_normalization: true   # every feature also as a within-region
+                                      # z-score; without it the model learns
+                                      # global patterns that do not transfer
+  bootstrap_n: 2000
+  bootstrap_blocks: ["region_lineage", "year"]
+
   null_model: "poisson_glm"
   challengers: ["poisson_glm_structure", "gbm_poisson"]
   # Null boundary: null sees the unit's OWN count series only (exposure,

@@ -1,0 +1,30 @@
+
+=== k=4 h=1, K=10 (test) ===
+  s_+people        recall 0.235  hit 0.456  AP 0.142  norm-rank 0.319
+  s_+semantics     recall 0.231  hit 0.447  AP 0.139  norm-rank 0.318
+  s_own_series     recall 0.217  hit 0.415  AP 0.135  norm-rank 0.317
+  s_+topology      recall 0.212  hit 0.401  AP 0.132  norm-rank 0.334
+  s_degree         recall 0.191  hit 0.383  AP 0.124  norm-rank 0.413
+  s_velocity       recall 0.159  hit 0.294  AP 0.107  norm-rank 0.429
+  s_random         recall 0.131  hit 0.271  AP 0.078  norm-rank 0.510
+  lift vs random, block-bootstrap 95% CI:
+    s_own_series     1.68x  [1.46, 1.89]
+    s_+topology      1.63x  [1.48, 1.78]
+    s_+people        1.80x  [1.62, 1.92]
+    s_+semantics     1.77x  [1.58, 1.92]
+    s_degree         1.48x  [1.37, 1.70]
+
+=== k=4 h=2, K=10 (test) ===
+  s_+semantics     recall 0.226  hit 0.435  AP 0.142  norm-rank 0.343
+  s_+people        recall 0.221  hit 0.433  AP 0.140  norm-rank 0.347
+  s_+topology      recall 0.218  hit 0.424  AP 0.141  norm-rank 0.343
+  s_own_series     recall 0.215  hit 0.425  AP 0.129  norm-rank 0.331
+  s_degree         recall 0.196  hit 0.401  AP 0.130  norm-rank 0.418
+  s_velocity       recall 0.166  hit 0.312  AP 0.107  norm-rank 0.444
+  s_random         recall 0.124  hit 0.265  AP 0.079  norm-rank 0.514
+  lift vs random, block-bootstrap 95% CI:
+    s_own_series     1.71x  [1.49, 1.83]
+    s_+topology      1.74x  [1.51, 1.85]
+    s_+people        1.76x  [1.55, 1.85]
+    s_+semantics     1.80x  [1.55, 1.92]
+    s_degree         1.61x  [1.43, 1.82]

@@ -99,3 +99,95 @@ the place to confirm this, with the specification declared first.
 
 What should be declared before that: scale k=4, K=10, the feature list above,
 the within-region normalization, and degree as the baseline to beat.
+
+---
+
+# The rate model is discarded. Layer 2 is the deliverable. (2026-08-20)
+
+Rate-model artifacts archived under `data/models/archive_rate_model/`;
+`reports/phase8_models.md` retained rather than deleted, since a failed arm that
+is documented is part of the result. `models.primary_task` is now
+`layer2_localization`.
+
+## Result 1 — localization works, decisively
+
+k=4, horizon 1, K=10, test origins, block-bootstrap 95% CI resampling whole
+years (rows inside a region-year are not independent):
+
+| scorer | recall@10 | hit rate | avg precision | lift vs random | 95% CI |
+|---|---:|---:|---:|---:|---|
+| random | 0.131 | 0.271 | 0.078 | 1.00 | — |
+| velocity | 0.159 | 0.294 | 0.107 | — | — |
+| degree | 0.191 | 0.383 | 0.124 | 1.48× | [1.37, 1.70] |
+| own series | 0.217 | 0.415 | 0.135 | 1.68× | [1.46, 1.89] |
+| +topology | 0.212 | 0.401 | 0.132 | 1.63× | [1.48, 1.78] |
+| **+people** | **0.235** | **0.456** | **0.142** | **1.80×** | **[1.62, 1.92]** |
+| +semantics | 0.231 | 0.447 | 0.139 | 1.77× | [1.58, 1.92] |
+
+**Every CI excludes 1.0 by a wide margin.** Horizon 2 agrees: 1.71×–1.80×,
+lower bounds 1.49–1.55.
+
+It holds at every test origin — recall@10 beats random at 2019, 2020, 2021,
+2022 and 2023 — and strengthens over time: lift 1.62× on origins ≤2020, 1.85×
+after.
+
+**And it grows with difficulty:**
+
+| region size | random | model | lift |
+|---|---:|---:|---:|
+| 11–50 | 0.497 | 0.688 | 1.38× |
+| 51–100 | 0.176 | 0.378 | 2.15× |
+| 101–300 | 0.050 | 0.131 | 2.59× |
+| **>300** | **0.017** | **0.082** | **4.78×** |
+
+Naming 10 of 30 nodes is nearly free, so the lift there is small. Naming 10 of
+600 is a real prediction, and that is where the model is worth 4.8× chance.
+
+## Result 2 — the mechanism ladder does not separate
+
+Marginal recall@10 from each rung, over the rung before it:
+
+| rung | recall@10 | marginal |
+|---|---:|---:|
+| own series | 0.2174 | — |
+| +topology | 0.2119 | **−0.0055** |
+| +people | 0.2349 | **+0.0231** |
+| +semantics | 0.2310 | **−0.0039** |
+
+**A node's own count series already carries essentially all of it.** Adding graph
+topology makes it slightly worse; adding people adds a little; adding semantics
+takes it back. Every rung's CI overlaps every other rung's. own series alone is
+1.68× and the full ladder is 1.77×, with intervals [1.46, 1.89] and
+[1.58, 1.92] — not a separation.
+
+This is a **predictability-ceiling** result, which the plan explicitly says is
+reportable. Where a birth lands inside a region is predictable well above chance,
+but what predicts it is how active and how new each node already is — not who is
+working with whom, not the shape of the graph around it, and not where it sits in
+embedding space.
+
+Note the direction of the surprise: topology *hurts*. Node degree on its own is a
+decent scorer (1.48×), but once the model already knows a node's own activity
+series, degree adds nothing and costs a little through added variance.
+
+## Why this is a stronger result than the rate model's
+
+The rate model's failure was calibration — the challengers systematically
+under-predicted and Poisson log-score punished that on high-count rows. A ranking
+has no rate to miscalibrate, so the same features get a fair test here. They still
+do not separate. That is now a finding about the phenomenon rather than about
+the estimator.
+
+Evidence base: 15,125 scored births at k=4/h=1/K=10, against 694 unit-years in
+the rate model.
+
+## Status
+
+Origins 2019–2023 were spent on the rate model first, so these numbers are
+**exploratory**. Origin 2024 (h=1) is sealed.
+
+**Declared specification for the confirmatory run**, to be graded once on 2024
+and not before: CPM scale k=4, K=10, the `+people` rung, within-region
+z-normalization of every feature, deterministic top-degree as the baseline to
+beat, recall@10 as the primary metric with hit-rate and average precision
+alongside, block-bootstrap over years for the interval.
