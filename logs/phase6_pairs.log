@@ -1,0 +1,252 @@
+  T=2016 k=3:    412 pair units of 2,346 possible (18%)
+  T=2017 k=3:    429 pair units of 3,160 possible (14%)
+  T=2018 k=3:    318 pair units of 2,278 possible (14%)
+  T=2019 k=3:    666 pair units of 4,950 possible (13%)
+  T=2020 k=3:    535 pair units of 4,005 possible (13%)
+  T=2021 k=3:    663 pair units of 5,778 possible (11%)
+  T=2022 k=3:    964 pair units of 9,870 possible (10%)
+  T=2023 k=3:    677 pair units of 5,995 possible (11%)
+  T=2024 k=3:  1,199 pair units of 10,585 possible (11%)
+  T=2016 k=4:    752 pair units of 3,741 possible (20%)
+  T=2017 k=4:  1,064 pair units of 4,371 possible (24%)
+  T=2018 k=4:  1,017 pair units of 4,465 possible (23%)
+  T=2019 k=4:  1,143 pair units of 6,105 possible (19%)
+  T=2020 k=4:  1,743 pair units of 9,316 possible (19%)
+  T=2021 k=4:  1,495 pair units of 7,750 possible (19%)
+  T=2022 k=4:  1,854 pair units of 10,731 possible (17%)
+  T=2023 k=4:  2,318 pair units of 15,051 possible (15%)
+  T=2024 k=4:  2,462 pair units of 13,695 possible (18%)
+  T=2016 k=5:    617 pair units of 2,485 possible (25%)
+  T=2017 k=5:  1,254 pair units of 4,753 possible (26%)
+  T=2018 k=5:  1,573 pair units of 6,555 possible (24%)
+  T=2019 k=5:  2,159 pair units of 9,316 possible (23%)
+  T=2020 k=5:  2,748 pair units of 11,175 possible (25%)
+  T=2021 k=5:  2,476 pair units of 11,175 possible (22%)
+  T=2022 k=5:  2,611 pair units of 13,695 possible (19%)
+  T=2023 k=5:  3,286 pair units of 14,706 possible (22%)
+  T=2024 k=5:  4,037 pair units of 19,110 possible (21%)
+{
+  "rows": 40472,
+  "origins": [
+    2016,
+    2024
+  ],
+  "per_origin": [
+    {
+      "origin": 2016,
+      "k": 3,
+      "regions": 69,
+      "possible_pairs": 2346,
+      "pairs_with_bridge": 412,
+      "share": 0.1756
+    },
+    {
+      "origin": 2017,
+      "k": 3,
+      "regions": 80,
+      "possible_pairs": 3160,
+      "pairs_with_bridge": 429,
+      "share": 0.1358
+    },
+    {
+      "origin": 2018,
+      "k": 3,
+      "regions": 68,
+      "possible_pairs": 2278,
+      "pairs_with_bridge": 318,
+      "share": 0.1396
+    },
+    {
+      "origin": 2019,
+      "k": 3,
+      "regions": 100,
+      "possible_pairs": 4950,
+      "pairs_with_bridge": 666,
+      "share": 0.1345
+    },
+    {
+      "origin": 2020,
+      "k": 3,
+      "regions": 90,
+      "possible_pairs": 4005,
+      "pairs_with_bridge": 535,
+      "share": 0.1336
+    },
+    {
+      "origin": 2021,
+      "k": 3,
+      "regions": 108,
+      "possible_pairs": 5778,
+      "pairs_with_bridge": 663,
+      "share": 0.1147
+    },
+    {
+      "origin": 2022,
+      "k": 3,
+      "regions": 141,
+      "possible_pairs": 9870,
+      "pairs_with_bridge": 964,
+      "share": 0.0977
+    },
+    {
+      "origin": 2023,
+      "k": 3,
+      "regions": 110,
+      "possible_pairs": 5995,
+      "pairs_with_bridge": 677,
+      "share": 0.1129
+    },
+    {
+      "origin": 2024,
+      "k": 3,
+      "regions": 146,
+      "possible_pairs": 10585,
+      "pairs_with_bridge": 1199,
+      "share": 0.1133
+    },
+    {
+      "origin": 2016,
+      "k": 4,
+      "regions": 87,
+      "possible_pairs": 3741,
+      "pairs_with_bridge": 752,
+      "share": 0.201
+    },
+    {
+      "origin": 2017,
+      "k": 4,
+      "regions": 94,
+      "possible_pairs": 4371,
+      "pairs_with_bridge": 1064,
+      "share": 0.2434
+    },
+    {
+      "origin": 2018,
+      "k": 4,
+      "regions": 95,
+      "possible_pairs": 4465,
+      "pairs_with_bridge": 1017,
+      "share": 0.2278
+    },
+    {
+      "origin": 2019,
+      "k": 4,
+      "regions": 111,
+      "possible_pairs": 6105,
+      "pairs_with_bridge": 1143,
+      "share": 0.1872
+    },
+    {
+      "origin": 2020,
+      "k": 4,
+      "regions": 137,
+      "possible_pairs": 9316,
+      "pairs_with_bridge": 1743,
+      "share": 0.1871
+    },
+    {
+      "origin": 2021,
+      "k": 4,
+      "regions": 125,
+      "possible_pairs": 7750,
+      "pairs_with_bridge": 1495,
+      "share": 0.1929
+    },
+    {
+      "origin": 2022,
+      "k": 4,
+      "regions": 147,
+      "possible_pairs": 10731,
+      "pairs_with_bridge": 1854,
+      "share": 0.1728
+    },
+    {
+      "origin": 2023,
+      "k": 4,
+      "regions": 174,
+      "possible_pairs": 15051,
+      "pairs_with_bridge": 2318,
+      "share": 0.154
+    },
+    {
+      "origin": 2024,
+      "k": 4,
+      "regions": 166,
+      "possible_pairs": 13695,
+      "pairs_with_bridge": 2462,
+      "share": 0.1798
+    },
+    {
+      "origin": 2016,
+      "k": 5,
+      "regions": 71,
+      "possible_pairs": 2485,
+      "pairs_with_bridge": 617,
+      "share": 0.2483
+    },
+    {
+      "origin": 2017,
+      "k": 5,
+      "regions": 98,
+      "possible_pairs": 4753,
+      "pairs_with_bridge": 1254,
+      "share": 0.2638
+    },
+    {
+      "origin": 2018,
+      "k": 5,
+      "regions": 115,
+      "possible_pairs": 6555,
+      "pairs_with_bridge": 1573,
+      "share": 0.24
+    },
+    {
+      "origin": 2019,
+      "k": 5,
+      "regions": 137,
+      "possible_pairs": 9316,
+      "pairs_with_bridge": 2159,
+      "share": 0.2318
+    },
+    {
+      "origin": 2020,
+      "k": 5,
+      "regions": 150,
+      "possible_pairs": 11175,
+      "pairs_with_bridge": 2748,
+      "share": 0.2459
+    },
+    {
+      "origin": 2021,
+      "k": 5,
+      "regions": 150,
+      "possible_pairs": 11175,
+      "pairs_with_bridge": 2476,
+      "share": 0.2216
+    },
+    {
+      "origin": 2022,
+      "k": 5,
+      "regions": 166,
+      "possible_pairs": 13695,
+      "pairs_with_bridge": 2611,
+      "share": 0.1907
+    },
+    {
+      "origin": 2023,
+      "k": 5,
+      "regions": 172,
+      "possible_pairs": 14706,
+      "pairs_with_bridge": 3286,
+      "share": 0.2234
+    },
+    {
+      "origin": 2024,
+      "k": 5,
+      "regions": 196,
+      "possible_pairs": 19110,
+      "pairs_with_bridge": 4037,
+      "share": 0.2113
+    }
+  ]
+}

@@ -237,3 +237,67 @@ embedding spread (median 0.168). All populated on 100% of rows.
   dense high-pace triangles.
 - **Feature 8, confirmed-birth persistence** — back-filled after Phase 7
   attachment, per the plan's 6 → 7 → back-fill → 8 ordering.
+
+---
+
+# Pair units built (2026-08-19)
+
+`data/graphs/features/pair_features.parquet` — **40,472 rows** across
+origins 2016–2024 × k ∈ {3,4,5}. A pair unit exists where two regions have
+nonzero bridge mass at T; that is 15–26% of possible pairs, so the unit set is
+sparse rather than quadratic.
+
+| feature (k=4) | n | median | p90 | max |
+|---|---:|---:|---:|---:|
+| bridge_mass | 13,848 | 3 | 26 | 1,297 |
+| bridge_growth | 11,563 | 1.00 | 2.00 | 40.5 |
+| dual_citizens | 13,848 | 0 | 1 | 18 |
+| dual_papers | 13,848 | 185 | 1,101 | 35,040 |
+| centroid_distance | 13,848 | 0.472 | 0.650 | 0.981 |
+
+`bridge_growth` is missing on 17% of rows (no T−1 bridge to compare against);
+`centroid_distance` is never missing, since the per-origin embedder covers every
+region with ≥3 embedded members.
+
+## The bridges are legible
+
+Strongest bridges at T=2020, k=4, read by their member sets:
+
+| bridge | dual papers | centroid dist | what it joins |
+|---:|---:|---:|---|
+| 922 | 10,705 | 0.135 | language models / BERT ↔ dialogue and summarization |
+| 710 | 16,362 | 0.427 | 3D vision and LiDAR ↔ language models |
+| 693 | 7,322 | 0.296 | language models ↔ speech and ASR |
+| 401 | 5,029 | 0.313 | dialogue ↔ speech and ASR |
+| 345 | 8,719 | 0.355 | 3D vision ↔ domain adaptation |
+| 330 | 15,327 | 0.322 | 3D vision ↔ quantization, acceleration, adversarial robustness |
+
+Centroid distance behaves as it should: the two closest research areas (language
+models and dialogue) sit at 0.135 while the genuinely cross-modal 3D-vision ↔
+language bridge sits at 0.427. The embedder is separating them without ever
+having seen post-T text.
+
+## Regions overlap, but sparsely
+
+Only **15% of pair units share at least one concept** (`dual_citizens > 0`), and
+the median is 0. CPM regions do overlap — that is the property the whole
+intersection-birth idea rests on — but overlap is the exception.
+
+This bears directly on the **C2 decision gate in Phase 7**. That gate measures
+the dual-*attachment* rate of actual births and stops the pair-unit arm if it
+falls below ~10 dual-attached births/yr. A 15% concept-overlap rate is the
+structural context for that measurement: if births attach to regions roughly the
+way concepts sit in them, dual attachment will be uncommon and the gate may well
+fire. The plan is explicit that pair-unit power must fail on nature rather than
+plumbing, so this number should be read alongside the C2 result rather than after
+it.
+
+## One thing the pre-registered hypothesis still needs
+
+The plan registers, post-C2, that *method*-carried bridges out-birth *task*-
+carried bridges. Nothing in the pipeline currently classifies a concept or a
+bridge as method versus task, and no such classification can be built from a
+2026-vintage source without reintroducing exactly the familiarity leak the
+vocabulary judge was audited against. It needs either a corpus-derived,
+per-origin rule or an explicitly-dated external taxonomy, decided before Phase 10
+registration rather than at it.
