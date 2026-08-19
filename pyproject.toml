@@ -9,6 +9,7 @@ dependencies = [
     "orjson>=3.12.0",
     "pandas>=3.0.5",
     "pyarrow>=25.0.1",
+    "python-igraph>=1.0.0",
     "pyyaml>=6.0.3",
     "scipy>=1.17.1",
     "spacy>=3.8.15",
