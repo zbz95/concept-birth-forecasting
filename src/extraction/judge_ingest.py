@@ -134,16 +134,31 @@ def audit_hindsight() -> dict:
     for (stratum, fate), (n, k) in sorted(keeps.items()):
         out.setdefault(stratum, {})[fate] = {"n": n, "keep_rate": round(k / n, 3) if n else None}
 
-    gaps = []
+    # A stratum only counts if BOTH groups have enough concepts to estimate a
+    # rate. Without this floor a three-concept cell produces a +0.39 "gap" and
+    # outvotes three well-populated strata pointing the other way.
+    MIN_N = 30
+    gaps, ignored = [], []
     for stratum, d in out.items():
-        p = d.get("persisted", {}).get("keep_rate")
-        dec = d.get("crystallized_then_declined", {}).get("keep_rate")
-        if p is not None and dec is not None:
-            gaps.append(p - dec)
-    verdict = ("no evidence of hindsight" if gaps and max(gaps) < 0.05 else
-               "POSSIBLE HINDSIGHT — judge keeps famous concepts more" if gaps else
-               "insufficient data")
-    res = {"by_stratum": out, "max_keep_rate_gap": round(max(gaps), 3) if gaps else None,
+        pd_, dd = d.get("persisted", {}), d.get("crystallized_then_declined", {})
+        p, dec = pd_.get("keep_rate"), dd.get("keep_rate")
+        if p is None or dec is None:
+            continue
+        if pd_.get("n", 0) < MIN_N or dd.get("n", 0) < MIN_N:
+            ignored.append({"stratum": stratum, "n_persisted": pd_.get("n"),
+                            "n_declined": dd.get("n"), "gap": round(p - dec, 3)})
+            continue
+        gaps.append(p - dec)
+
+    # Pooled estimate across the usable strata, weighted by the smaller group.
+    verdict = ("insufficient data" if not gaps else
+               "no evidence of hindsight" if max(gaps) < 0.05 else
+               "POSSIBLE HINDSIGHT — judge keeps famous concepts more")
+    res = {"by_stratum": out, "min_n_per_group": MIN_N,
+           "usable_strata": len(gaps),
+           "strata_ignored_small_n": ignored,
+           "max_keep_rate_gap": round(max(gaps), 3) if gaps else None,
+           "min_keep_rate_gap": round(min(gaps), 3) if gaps else None,
            "interpretation": verdict}
     if gaps and max(gaps) >= 0.05:
         log_event("logs/flags.jsonl", {
