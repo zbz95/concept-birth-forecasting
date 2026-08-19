@@ -1,0 +1,342 @@
+  T=2016 k=3:    69 rows  missing graph 70% pace 0% emb 70%
+  T=2017 k=3:    80 rows  missing graph 60% pace 0% emb 60%
+  T=2018 k=3:    68 rows  missing graph 31% pace 0% emb 31%
+  T=2019 k=3:   100 rows  missing graph 53% pace 0% emb 53%
+  T=2020 k=3:    90 rows  missing graph 30% pace 0% emb 30%
+  T=2021 k=3:   108 rows  missing graph 44% pace 0% emb 44%
+  T=2022 k=3:   141 rows  missing graph 38% pace 0% emb 38%
+  T=2023 k=3:   110 rows  missing graph 31% pace 0% emb 31%
+  T=2024 k=3:   146 rows  missing graph 38% pace 0% emb 38%
+  T=2016 k=4:    87 rows  missing graph 74% pace 0% emb 74%
+  T=2017 k=4:    94 rows  missing graph 64% pace 0% emb 64%
+  T=2018 k=4:    95 rows  missing graph 48% pace 0% emb 48%
+  T=2019 k=4:   111 rows  missing graph 67% pace 0% emb 67%
+  T=2020 k=4:   137 rows  missing graph 62% pace 0% emb 62%
+  T=2021 k=4:   125 rows  missing graph 42% pace 0% emb 42%
+  T=2022 k=4:   147 rows  missing graph 47% pace 0% emb 47%
+  T=2023 k=4:   174 rows  missing graph 42% pace 0% emb 42%
+  T=2024 k=4:   166 rows  missing graph 48% pace 0% emb 48%
+  T=2016 k=5:    71 rows  missing graph 63% pace 0% emb 63%
+  T=2017 k=5:    98 rows  missing graph 63% pace 0% emb 63%
+  T=2018 k=5:   115 rows  missing graph 67% pace 0% emb 67%
+  T=2019 k=5:   137 rows  missing graph 65% pace 0% emb 65%
+  T=2020 k=5:   150 rows  missing graph 63% pace 0% emb 63%
+  T=2021 k=5:   150 rows  missing graph 48% pace 0% emb 48%
+  T=2022 k=5:   166 rows  missing graph 53% pace 0% emb 53%
+  T=2023 k=5:   172 rows  missing graph 52% pace 0% emb 52%
+  T=2024 k=5:   196 rows  missing graph 51% pace 0% emb 51%
+{
+  "rows": 3303,
+  "origins": [
+    2016,
+    2024
+  ],
+  "k": [
+    3,
+    4,
+    5
+  ],
+  "per_origin": [
+    {
+      "origin": 2016,
+      "k": 3,
+      "rows": 69,
+      "missing_share": {
+        "graph_delta_missing": 0.6956521739130435,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6956521739130435,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2017,
+      "k": 3,
+      "rows": 80,
+      "missing_share": {
+        "graph_delta_missing": 0.6,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2018,
+      "k": 3,
+      "rows": 68,
+      "missing_share": {
+        "graph_delta_missing": 0.3088235294117647,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.3088235294117647,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2019,
+      "k": 3,
+      "rows": 100,
+      "missing_share": {
+        "graph_delta_missing": 0.53,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.53,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2020,
+      "k": 3,
+      "rows": 90,
+      "missing_share": {
+        "graph_delta_missing": 0.3,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.3,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2021,
+      "k": 3,
+      "rows": 108,
+      "missing_share": {
+        "graph_delta_missing": 0.4351851851851852,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.4351851851851852,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2022,
+      "k": 3,
+      "rows": 141,
+      "missing_share": {
+        "graph_delta_missing": 0.3829787234042553,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.3829787234042553,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2023,
+      "k": 3,
+      "rows": 110,
+      "missing_share": {
+        "graph_delta_missing": 0.3090909090909091,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.3090909090909091,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2024,
+      "k": 3,
+      "rows": 146,
+      "missing_share": {
+        "graph_delta_missing": 0.3835616438356164,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.3835616438356164,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2016,
+      "k": 4,
+      "rows": 87,
+      "missing_share": {
+        "graph_delta_missing": 0.735632183908046,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.735632183908046,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2017,
+      "k": 4,
+      "rows": 94,
+      "missing_share": {
+        "graph_delta_missing": 0.6382978723404256,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6382978723404256,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2018,
+      "k": 4,
+      "rows": 95,
+      "missing_share": {
+        "graph_delta_missing": 0.4842105263157895,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.4842105263157895,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2019,
+      "k": 4,
+      "rows": 111,
+      "missing_share": {
+        "graph_delta_missing": 0.6666666666666666,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6666666666666666,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2020,
+      "k": 4,
+      "rows": 137,
+      "missing_share": {
+        "graph_delta_missing": 0.6204379562043796,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6204379562043796,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2021,
+      "k": 4,
+      "rows": 125,
+      "missing_share": {
+        "graph_delta_missing": 0.424,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.424,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2022,
+      "k": 4,
+      "rows": 147,
+      "missing_share": {
+        "graph_delta_missing": 0.46938775510204084,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.46938775510204084,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2023,
+      "k": 4,
+      "rows": 174,
+      "missing_share": {
+        "graph_delta_missing": 0.41954022988505746,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.41954022988505746,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2024,
+      "k": 4,
+      "rows": 166,
+      "missing_share": {
+        "graph_delta_missing": 0.4819277108433735,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.4819277108433735,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2016,
+      "k": 5,
+      "rows": 71,
+      "missing_share": {
+        "graph_delta_missing": 0.6338028169014085,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6338028169014085,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2017,
+      "k": 5,
+      "rows": 98,
+      "missing_share": {
+        "graph_delta_missing": 0.6326530612244898,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6326530612244898,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2018,
+      "k": 5,
+      "rows": 115,
+      "missing_share": {
+        "graph_delta_missing": 0.6695652173913044,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6695652173913044,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2019,
+      "k": 5,
+      "rows": 137,
+      "missing_share": {
+        "graph_delta_missing": 0.6496350364963503,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6496350364963503,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2020,
+      "k": 5,
+      "rows": 150,
+      "missing_share": {
+        "graph_delta_missing": 0.6266666666666667,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.6266666666666667,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2021,
+      "k": 5,
+      "rows": 150,
+      "missing_share": {
+        "graph_delta_missing": 0.48,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.48,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2022,
+      "k": 5,
+      "rows": 166,
+      "missing_share": {
+        "graph_delta_missing": 0.5301204819277109,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.5301204819277109,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2023,
+      "k": 5,
+      "rows": 172,
+      "missing_share": {
+        "graph_delta_missing": 0.5232558139534884,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.5232558139534884,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    },
+    {
+      "origin": 2024,
+      "k": 5,
+      "rows": 196,
+      "missing_share": {
+        "graph_delta_missing": 0.5051020408163265,
+        "pace_missing": 0.0,
+        "embedding_missing": 0.5051020408163265,
+        "yoy_quarter_accel_missing": 0.0
+      }
+    }
+  ],
+  "features_deferred": {
+    "confirmed_birth_persistence": "back-filled after Phase 7",
+    "bridge_mass_growth": "pair units, not region units"
+  }
+}

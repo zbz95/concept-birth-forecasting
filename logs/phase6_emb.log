@@ -1,0 +1,101 @@
+  T=2014:   6,800 abstracts ->   2,565 vectors
+  T=2015:   9,800 abstracts ->   3,726 vectors
+  T=2016:  14,996 abstracts ->   5,603 vectors
+  T=2017:  22,982 abstracts ->   8,493 vectors
+  T=2018:  35,092 abstracts ->  12,843 vectors
+  T=2019:  51,751 abstracts ->  18,493 vectors
+  T=2020:  73,813 abstracts ->  25,771 vectors
+  T=2021:  98,599 abstracts ->  33,817 vectors
+  T=2022: 126,560 abstracts ->  42,804 vectors
+  T=2023: 163,551 abstracts ->  54,470 vectors
+  T=2024: 213,065 abstracts ->  69,491 vectors
+[
+  {
+    "origin": 2014,
+    "sentences": 6800,
+    "vocab_in_model": 2565,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2015,
+    "sentences": 9800,
+    "vocab_in_model": 3726,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2016,
+    "sentences": 14996,
+    "vocab_in_model": 5603,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2017,
+    "sentences": 22982,
+    "vocab_in_model": 8493,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2018,
+    "sentences": 35092,
+    "vocab_in_model": 12843,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2019,
+    "sentences": 51751,
+    "vocab_in_model": 18493,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2020,
+    "sentences": 73813,
+    "vocab_in_model": 25771,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2021,
+    "sentences": 98599,
+    "vocab_in_model": 33817,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2022,
+    "sentences": 126560,
+    "vocab_in_model": 42804,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2023,
+    "sentences": 163551,
+    "vocab_in_model": 54470,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  },
+  {
+    "origin": 2024,
+    "sentences": 213065,
+    "vocab_in_model": 69491,
+    "dim": 200,
+    "algo": "word2vec-sg",
+    "pretrained": false
+  }
+]

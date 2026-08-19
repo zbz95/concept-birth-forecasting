@@ -173,7 +173,15 @@ regions:
   cpm_impl: "custom_kclique"          # graph-tool not pip-installable; NOT networkx
   max_region_share: 0.20              # degeneracy guard on largest region
   lineage_jaccard: 0.30              # measured stability at k=4: 46.9% matched
-  feature_spec_signed_off: false      # HARD GATE before Phase 6 implementation
+  feature_spec_signed_off: true       # signed off 2026-08-19 (PI: "you can continue" after
+                                      # reports/phase6_feature_spec.md was delivered). Two items
+                                      # were flagged for attention and stand AS SPECIFIED unless
+                                      # revised: (a) social_breadth is split out of pace-of-
+                                      # collaboration and assigned to the +social ablation rung,
+                                      # not +semantic_relational, because it is people-derived;
+                                      # (b) confirmed-birth persistence uses crystallization
+                                      # <= T-(m-1), not <= T, or every row imports a year of
+                                      # future evidence (leakage checklist item 4).
 
 embedder:
   # Per-origin, from scratch, CPU. No pretrained encoders anywhere, ever.

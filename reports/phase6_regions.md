@@ -169,3 +169,71 @@ multi-scale robustness comparison the plan asks for in Phase 9.
 
 The feature spec (`reports/phase6_feature_spec.md`) is unsigned, so no feature
 code is written. `regions.feature_spec_signed_off` remains false.
+
+---
+
+# Features extracted (2026-08-19)
+
+Spec signed off on the PI's instruction to continue; both flagged items stand as
+specified (`social_breadth` in the `+social` rung; birth persistence at
+`t <= T-(m-1)`). Recorded in `logs/flags.jsonl` so either can be revised.
+
+**Per-origin embedders**: 11 word2vec models trained from scratch on abstracts
+dated ≤ T, skip-gram, 200-dim, concepts trained as single tokens. 8,493 vectors
+at T=2017 rising to 42,804 at T=2022. No pretrained encoder anywhere.
+
+**`data/graphs/features/region_features.parquet`** — 3,303 rows over origins
+2016–2024 × k ∈ {3,4,5}. Within the plan's Phase 8 expectation of 10³–10⁴ rows.
+
+Worked example, the largest region at T=2020 (586 members, 16,117 papers):
+paper velocity 1.35 (1y) / 1.57 (2y), YoY-quarter acceleration −0.021, internal
+density 0.048 rising by 0.010, edge velocity 1.26, pace 4.67 co-attestations per
+pair-year across 11 author groups, author influx 63%, embedding spread 0.427
+tightening by 0.012.
+
+## Two findings that matter for Phase 8
+
+**Missingness is 52%, as lineage predicted.** Edge velocity, density change and
+embedding influx are null for 1,708 of 3,303 rows, because they need a T−1
+counterpart and only 47% of regions match one. Emitted with indicators, never
+imputed.
+
+**The graph features are near-constant on most rows.** A region that is a single
+maximal clique has density 1.0 by construction, and under fixed membership its
+internal edge count is identical at T and T−1:
+
+| size class (k=4) | rows | density = 1.0 | edge velocity = 1.0 | density change = 0 |
+|---|---:|---:|---:|---:|
+| 4–9 (single clique) | 901 | 57% | 33% | 33% |
+| 10–300 | 227 | 0% | 6% | 6% |
+| >300 | 8 | 0% | 0% | 0% |
+
+Combining both effects, the rows where the graph-derived challenger features
+actually carry signal are:
+
+| k | total rows | with lineage parent AND size ≥ 10 |
+|---:|---:|---:|
+| 3 | 912 | 88 |
+| 4 | 1,136 | **146 (13%)** |
+| 5 | 1,255 | 206 |
+
+**This is a power statement about the ablation ladder, not a bug.** The null's
+features (exposure, velocity, acceleration) are populated on all 3,303 rows. The
+`+semantic_relational` rung's graph features are informative on roughly an eighth
+of them. Any log-score gain attributed to topology is being estimated from ~150
+rows per scale, and the block-bootstrap CI in Phase 9 should be expected to be
+correspondingly wide.
+
+Features that do not degenerate: pace of collaboration (median 8.2
+co-attestations per pair-year, range 2–177), social breadth (median 19.3 author
+groups), author influx (median 82% new authors — high, and worth a sanity look),
+embedding spread (median 0.168). All populated on 100% of rows.
+
+## Remaining in Phase 6
+
+- **Pair units** — region-pair bridge features (spec item 7). Blocked on nothing;
+  next.
+- **System B parent-sets** — frequent sub-profiles of past confirmed births plus
+  dense high-pace triangles.
+- **Feature 8, confirmed-birth persistence** — back-filled after Phase 7
+  attachment, per the plan's 6 → 7 → back-fill → 8 ordering.
