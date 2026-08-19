@@ -1,0 +1,13 @@
+  T=2016 k=4: 1,433 confirmed births in [2014,2015]  attached   955  regions with history 84/87
+  T=2017 k=4: 2,464 confirmed births in [2015,2016]  attached 1,478  regions with history 94/94
+  T=2018 k=4: 3,580 confirmed births in [2016,2017]  attached 2,149  regions with history 95/95
+  T=2019 k=4: 4,757 confirmed births in [2017,2018]  attached 3,512  regions with history 110/111
+  T=2020 k=4: 5,816 confirmed births in [2018,2019]  attached 3,912  regions with history 136/137
+  T=2021 k=4: 6,542 confirmed births in [2019,2020]  attached 4,050  regions with history 125/125
+  T=2022 k=4: 6,271 confirmed births in [2020,2021]  attached 4,466  regions with history 147/147
+  T=2023 k=4: 6,236 confirmed births in [2021,2022]  attached 4,780  regions with history 174/174
+  T=2024 k=4: 9,302 confirmed births in [2022,2023]  attached 7,083  regions with history 166/166
+{
+  "rows": 3303,
+  "window_rule": "crystallization in [T-1-(m-1), T-(m-1)]"
+}

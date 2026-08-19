@@ -12,7 +12,9 @@ dependencies = [
     "pyarrow>=25.0.1",
     "python-igraph>=1.0.0",
     "pyyaml>=6.0.3",
+    "scikit-learn>=1.9.0",
     "scipy>=1.17.1",
     "spacy>=3.8.15",
+    "statsmodels>=0.14.6",
     "tqdm>=4.70.0",
 ]
