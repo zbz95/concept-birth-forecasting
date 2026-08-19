@@ -94,3 +94,86 @@ well-connected things, is a worse bet than one on a loose edge of the region.
 Inverted, these would score above random — which is Burt's structural-holes
 argument appearing in the data, and the one genuinely shape-like signal here.
 Worth testing as inverted features.
+
+---
+
+# Inverted features and Burt's constraint
+
+K=20, hubs cut at the 95th percentile, validation. Random = 0.1337.
+
+## The inversions all work — the sub-random scores were real signal
+
+| feature | as-is | inverted |
+|---|---:|---:|
+| clustering | 0.59× | **2.02×** |
+| second-order degree | 0.50× | **2.39×** |
+| Burt's constraint | 0.72× | **1.94×** |
+
+Nothing here is noise. A node's *low* clustering, *low* neighbour degree and
+*low* Burt constraint each predict where a birth lands at roughly 2× random.
+
+## Burt's structural holes, properly measured
+
+| measure | recall@20 | lift |
+|---|---:|---:|
+| Burt constraint (high = closed) | 0.096 | 0.72× |
+| **−Burt constraint (high = brokerage)** | **0.260** | **1.94×** |
+| **effective size** | **0.277** | **2.07×** |
+| efficiency | 0.271 | 2.02× |
+
+**Your hypothesis is confirmed.** New concepts appear at brokerage positions —
+nodes spanning structural holes, with sparse and non-redundant neighbourhoods —
+not in the dense, closed core of a region.
+
+**And it is not merely degree in disguise.** Within-region correlation with total
+degree:
+
+| | corr with degree |
+|---|---:|
+| −Burt constraint | **+0.298** |
+| efficiency | +0.383 |
+| −clustering | +0.458 |
+| effective size | +0.461 |
+| −second-order degree | +0.529 |
+
+Burt constraint is the most independent of the set at +0.30. It is carrying
+information degree does not.
+
+## But it adds nothing on top of magnitude
+
+| rule | recall@20 | lift |
+|---|---:|---:|
+| `n_T` alone | 0.3414 | 2.55× |
+| `n_T` × log(1+degree) | 0.3480 | 2.60× |
+| **z(`n_T`) + z(degree)** — magnitude | **0.3489** | **2.61×** |
+| magnitude + 0.25 × brokerage | 0.3493 | 2.61× |
+| magnitude + 0.50 × brokerage | 0.3496 | **2.62×** |
+| magnitude + 1.00 × brokerage | 0.3432 | 2.57× |
+| brokerage alone | 0.2598 | 1.94× |
+
+2.61× → 2.62×. That is nothing.
+
+So the structural-holes signal is **real, partly independent of degree, and
+completely redundant for prediction**. Whatever brokerage knows that degree does
+not, it does not know anything about *where the next concept appears* that
+magnitude has not already said.
+
+## Where this leaves the structural question
+
+Across ~40 features now tested:
+
+- **Magnitude predicts.** Papers this year, total degree, external degree,
+  new-neighbour count, PageRank — all 2.1–2.6×.
+- **Shape predicts, but only inverted, and only redundantly.** Clustering,
+  Burt constraint, second-order degree — 1.9–2.4× when flipped, and worth
+  +0.01× on top of magnitude.
+- **Dynamics predict nothing.** Edge recency, edge age, turnover, share of new
+  edges — 1.0–1.2×, indistinguishable from random.
+
+The best rule found remains two terms: **z(papers this year) + z(total degree),
+K=20, top 5% of nodes removed — 2.61× random on validation.**
+
+There is a real scientific statement here, and it is not "structure does not
+matter". It is: **structure matters, and it says the same thing size does.**
+Births land on big, busy, loosely-embedded nodes — and "big", "busy" and
+"loosely-embedded" turn out to be three views of one underlying quantity.

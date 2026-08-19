@@ -1,0 +1,24 @@
+K=20, hubs cut at 95th pct, validation.  random = 0.1337
+
+=== INVERTED: do the sub-random scorers beat random when flipped? ===
+  clustering                 recall 0.0792   lift 0.59x
+  neg_clustering             recall 0.2704   lift 2.02x
+  second_order_deg           recall 0.0662   lift 0.50x
+  neg_second_order_deg       recall 0.3199   lift 2.39x
+
+=== BURT'S STRUCTURAL HOLES ===
+  burt_constraint            recall 0.0959   lift 0.72x
+  neg_burt_constraint        recall 0.2598   lift 1.94x
+  effective_size             recall 0.2765   lift 2.07x
+  efficiency                 recall 0.2705   lift 2.02x
+
+=== reference ===
+  deg_total                  recall 0.3360   lift 2.51x
+  n_T                        recall 0.3414   lift 2.55x
+
+=== IS IT JUST DEGREE? within-region correlation with deg_total ===
+  neg_clustering             corr = +0.458
+  neg_burt_constraint        corr = +0.298
+  effective_size             corr = +0.461
+  efficiency                 corr = +0.383
+  neg_second_order_deg       corr = +0.529

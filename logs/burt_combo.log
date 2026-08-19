@@ -1,0 +1,12 @@
+K=20, hub 95th pct, validation.  random = 0.1337
+
+=== does brokerage ADD to magnitude? ===
+  n_T alone                          recall 0.3414   lift 2.55x
+  n_T x log(1+deg)                   recall 0.3480   lift 2.60x
+  z(n_T) + z(deg)  [magnitude]       recall 0.3489   lift 2.61x
+  magnitude + 0.25 x brokerage       recall 0.3493   lift 2.61x
+  magnitude + 0.50 x brokerage       recall 0.3496   lift 2.62x
+  magnitude + 1.00 x brokerage       recall 0.3432   lift 2.57x
+
+=== brokerage alone, for reference ===
+  z(-burt constraint) alone          recall 0.2598   lift 1.94x
