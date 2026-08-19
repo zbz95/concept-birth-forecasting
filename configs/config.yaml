@@ -263,7 +263,23 @@ localization:
                                       # z-score; without it the model learns
                                       # global patterns that do not transfer
   bootstrap_n: 2000
-  bootstrap_blocks: ["region_lineage", "year"]
+  bootstrap_blocks: ["region"]        # with only 2 test origins a year-block
+                                      # bootstrap has 2 blocks and is degenerate;
+                                      # resampling regions within years is the
+                                      # usable clustering at this size
+
+  # PI decision 2026-08-20: three-way split. Until now there was NO validation
+  # set, which is how model decisions ended up being made against test.
+  #   train      2016-2018   fit coefficients
+  #   validation 2019-2021   ALL model decisions: hyperparameters, rung, K
+  #   test       2022-2023   touched once, reported, never iterated on
+  # Honest caveat: 2022-2023 appeared in two earlier runs whose pooled results
+  # were seen, and one architecture change (within-region normalization) was
+  # made with that knowledge. The split quarantines everything from here
+  # forward; it does not un-see what was already seen.
+  origins_train: [2016, 2018]
+  origins_validation: [2019, 2021]
+  origins_test: [2022, 2023]
 
   null_model: "poisson_glm"
   challengers: ["poisson_glm_structure", "gbm_poisson"]

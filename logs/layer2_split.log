@@ -1,0 +1,26 @@
+
+=== k=4 h=1, K=10 ===
+  split: train [2016, 2018]  validation [2019, 2020, 2021]  test [2022, 2023]
+  selected on VALIDATION: rung=own_series depth=2 leaf=50 l2=1.0 (val recall 0.206, 96 configs tried)
+  validation:
+    s_random   recall 0.110  hit 0.246  AP 0.068  (6,004 births)
+    s_degree   recall 0.184  hit 0.396  AP 0.122  (6,004 births)
+    s_sel      recall 0.206  hit 0.420  AP 0.125  (6,004 births)
+  test:
+    s_random   recall 0.144  hit 0.287  AP 0.085  (9,121 births)
+    s_degree   recall 0.196  hit 0.374  AP 0.126  (9,121 births)
+    s_sel      recall 0.250  hit 0.447  AP 0.155  (9,121 births)
+  TEST lift vs random: 1.73x  95% CI [1.46, 2.07]
+
+=== k=4 h=2, K=10 ===
+  split: train [2016, 2018]  validation [2019, 2020, 2021]  test [2022, 2023]
+  selected on VALIDATION: rung=+people depth=2 leaf=50 l2=1.0 (val recall 0.216, 96 configs tried)
+  validation:
+    s_random   recall 0.105  hit 0.239  AP 0.068  (12,750 births)
+    s_degree   recall 0.185  hit 0.396  AP 0.123  (12,750 births)
+    s_sel      recall 0.216  hit 0.451  AP 0.138  (12,750 births)
+  test:
+    s_random   recall 0.152  hit 0.302  AP 0.094  (8,519 births)
+    s_degree   recall 0.213  hit 0.409  AP 0.142  (8,519 births)
+    s_sel      recall 0.321  hit 0.571  AP 0.195  (8,519 births)
+  TEST lift vs random: 2.10x  95% CI [1.48, 2.83]

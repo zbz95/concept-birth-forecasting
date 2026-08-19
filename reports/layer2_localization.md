@@ -191,3 +191,70 @@ and not before: CPM scale k=4, K=10, the `+people` rung, within-region
 z-normalization of every feature, deterministic top-degree as the baseline to
 beat, recall@10 as the primary metric with hit-rate and average precision
 alongside, block-bootstrap over years for the interval.
+
+---
+
+# Three-way split (2026-08-20)
+
+Adopted at PI direction, because there was no validation set and model decisions
+were consequently being made against test.
+
+    train      2016-2018   fit coefficients
+    validation 2019-2021   every model decision -- 96 configurations tried
+    test       2022-2023   scored ONCE with the selected configuration
+
+## Result, k=4, K=10
+
+| | random | degree | selected model |
+|---|---:|---:|---:|
+| **h=1 validation** (6,004 births) | 0.110 | 0.184 | **0.206** |
+| **h=1 test** (9,121 births) | 0.144 | 0.196 | **0.250** |
+| **h=2 validation** (12,750 births) | 0.105 | 0.185 | **0.216** |
+| **h=2 test** (8,519 births) | 0.152 | 0.213 | **0.321** |
+
+Test lift over random: **1.73× [1.46, 2.07]** at h=1, **2.10× [1.48, 2.83]** at
+h=2. Both intervals exclude 1.0.
+
+Hit rate at h=2 test — the share of births with at least one true parent among
+the ten named — is **57.1%**, against 30.2% for random and 40.9% for degree.
+
+## The selection procedure confirmed the mechanism finding independently
+
+Given a free choice over all four ablation rungs and 96 hyperparameter
+combinations, judged only on validation, the procedure selected:
+
+- **h=1: `own_series`** — the simplest rung. Node counts, velocity, coinage age,
+  whether the node itself recently crystallized. No topology, no people, no
+  semantics.
+- **h=2: `+people`** — one rung further.
+
+This is stronger evidence than the earlier ladder table. There the rungs'
+confidence intervals merely overlapped; here a selection procedure with no
+knowledge of test, free to take the richest model available, chose the poorest
+one at h=1 and stopped at +people for h=2. **The extra mechanisms are not being
+rejected by a significance threshold — they are not being chosen when something
+has to be.**
+
+## Test scores above validation, which is worth noting
+
+0.250 test against 0.206 validation at h=1. That is the opposite of overfitting.
+The likely cause is composition: the 2022–2023 origins have larger regions and
+more births per region, and lift rises with region size. It is not evidence the
+model is better than validation suggested; it is evidence the two periods are not
+exchangeable, which matters for how far forward any of this generalizes.
+
+## What this split does and does not fix
+
+**Fixes:** every model decision from here is made on validation. The 96-config
+search never saw test.
+
+**Does not fix:** the 2022–2023 origins appeared in two earlier runs whose pooled
+results I looked at, and one architecture decision — adding within-region
+normalization — was made with that knowledge. The split quarantines future
+iteration; it cannot un-see what was already seen. These numbers should be read
+as a well-controlled development result, not a registered confirmation.
+
+**Weaker than the plan asks:** the plan specifies a block bootstrap resampling
+whole region-lineages *and* whole years. With two test origins a year-block
+bootstrap has two blocks, so the interval above resamples regions only and does
+not capture year-level dependence. The true interval is wider than [1.46, 2.07].
