@@ -54,7 +54,11 @@ candidates:
 vocabulary:
   min_total_freq: 9                   # papers; re-evaluated per origin as vocab_T
   c_value_enabled: true
-  c_value_min: null                   # set at Phase 3 gate, with PI
+  c_value_min: 0                      # PI decision 2026-08-19 at the Phase 3 gate.
+                                      # Removes exactly the nested fragments C-value detects
+                                      # (`fold cross`, `carlo tree`, `probability hypothesis`)
+                                      # and nothing else: 1% of clusters, 99% of just-observable
+                                      # ones retained. Higher floors are min_total_freq in disguise.
   pattern_kills:
     verb_led: true
     ordinals: true
@@ -79,7 +83,9 @@ merges:
   merge_log: "logs/merges.jsonl"      # append-only, undo column
 
 llm_judge:
-  enabled: null                       # PI decides at the Phase 3 STOP-AND-ASK
+  enabled: false                      # PI decision 2026-08-19: judge-off is the v1 vocabulary.
+                                      # Deterministic filters already cover the judge's remit
+                                      # (nominal-head + generic-head kills). Sensitivity -> future work.
   criteria: ["not_a_noun_phrase", "generic"]
   forbidden_criteria: ["familiarity", "novelty", "importance"]
   audit_sample_n: 200
@@ -195,7 +201,25 @@ expected_bands:
   # corpus, not a defect). Band now guards against snapshot drift / filter
   # regression, not against the original estimate. Original band: [300000, 600000].
   phase1_papers_kept:        [255000, 285000]
-  phase3_vocab_clusters:     [20000, 60000]
+  # RECALIBRATED 2026-08-19 by PI decision. vocab_T is a function of T, not a
+  # constant: it grows 29x from 2014 to 2024 tracking a corpus that grows 19x.
+  # No fixed C-value floor is inside the original [20000, 60000] at every origin.
+  # The tripwire now guards the SHAPE of the curve -- a break between adjacent
+  # origins -- rather than an absolute count. Original band: [20000, 60000].
+  phase3_vocab_clusters_by_origin:
+    2014: 3670
+    2015: 5266
+    2016: 7955
+    2017: 12109
+    2018: 18444
+    2019: 26785
+    2020: 37706
+    2021: 49897
+    2022: 63436
+    2023: 81710
+    2024: 105958
+  phase3_vocab_tolerance: 0.15        # per-origin, vs the measured curve above
+  phase3_vocab_growth_ratio: [1.20, 1.60]   # clusters(T)/clusters(T-1); a break here is the real signal
   phase4_crystallizations_yr: [100, 1000]
   phase5_nodes:              [15000, 40000]
   phase5_edges:              [100000, 1000000]

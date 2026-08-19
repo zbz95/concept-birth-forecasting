@@ -13,9 +13,11 @@ Per origin T:
   5. merges      — only edges whose evidence date is <= T are active
   6. cluster df_T — a paper naming several members of one cluster counts ONCE
 
-No C-value floor is applied here. `c_value_min` is null in config by design; the
-plan reserves it for the PI at the Phase 3 gate, and picking it to land the
-vocabulary inside its expected band is precisely what Principle 6 forbids.
+The C-value floor is `c_value_min`, set to 0 by PI decision at the Phase 3 gate
+on 2026-08-19. At 0 it removes exactly the nested fragments C-value is built to
+detect - terms whose frequency is fully explained by the longer terms containing
+them - and nothing else. It was chosen on that ground, not to land the
+vocabulary inside its expected band, which Principle 6 forbids.
 """
 
 from __future__ import annotations
@@ -138,6 +140,7 @@ def build_origin(con, cfg: dict, T: int) -> dict:
         JOIN cvt v ON v.term = p.term
         WHERE p.year <= {T}
         GROUP BY c.cluster
+        HAVING max(v.c_value) > {cfg["vocabulary"]["c_value_min"]}
       ) TO '{out}' (FORMAT PARQUET, COMPRESSION ZSTD)""")
 
     n_clusters, n_multi = con.execute(f"""

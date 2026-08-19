@@ -127,3 +127,37 @@ same post-hoc-metadata issue as §1.
   to `gans` while `GAN` gives `gan`. These fork into separate ledger rows and
   must be reunited by Phase 3's deterministic string-variant merge rules, which
   are timeless and therefore causally safe.
+
+## 7. Vocabulary construction decisions (Phase 3 gate, 2026-08-19)
+
+- **`c_value_min = 0`.** Chosen because at 0 the C-value filter removes exactly
+  what it is designed to detect — terms whose frequency is fully explained by the
+  longer terms containing them (`fold cross` from *10-fold cross validation*,
+  `carlo tree` from *Monte Carlo tree search*, `probability hypothesis` from
+  *probability hypothesis density*) — 1% of clusters, while retaining 99% of
+  just-observable ones. Higher floors act as a second frequency threshold and
+  delete newly born concepts: floor 15 deletes `wav2vec2`, `sent2vec`, `vit-l`,
+  `gpt-4`; floor 50 retains **0%** of clusters in the just-crystallized range.
+- **Expected band recalibrated to a per-origin curve.** `vocab_T` grows 29× from
+  2014 to 2024, tracking a corpus that grows 19×. No fixed C-value floor lands
+  inside the original 20–60k at every origin, and reaching band at 2024 requires
+  a floor that makes newly crystallized concepts invisible. The tripwire now
+  guards the shape of the curve (per-origin tolerance plus an adjacent-origin
+  growth ratio) rather than an absolute count.
+- **LLM judge disabled.** Judge-off is the v1 vocabulary. The deterministic
+  nominal-head and generic-head kills cover the judge's stated remit
+  (content-free deletions) reproducibly and causally. Judge sensitivity moves to
+  future work, as the plan permits.
+- **Two strict readings of the plan's pattern kills**, both adopted on linguistic
+  grounds and verified to lose no spot-list term: a candidate containing a
+  function word *anywhere* is a straddler (only the n-gram arm can produce one);
+  and a term's head must be nominal. Known cost of the first: `bag of word` is
+  killed. Without the second, bare adjectives (`novel`, 75,178 papers) survive as
+  concepts.
+- **Acronym merges require disambiguation.** Union-find over Schwartz-Hearst
+  pairs chained unrelated concepts through shared short forms — `SR` merged
+  speech recognition, super-resolution, success rate, surface reconstruction and
+  spatial reasoning into one 33-member cluster. Acronyms now need ≥3 characters
+  and one long form holding ≥70% of attestations, measured on *normalized* long
+  forms. 300 ambiguous acronyms (`bnn`, `lda`, `mrf`, `cam`, `cad`) are refused
+  and queued for human review rather than merged.
