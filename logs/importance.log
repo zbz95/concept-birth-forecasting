@@ -1,0 +1,18 @@
+baseline validation recall@10 with all 5 own-series features: 0.2059
+
+permutation importance -- shuffle one feature (and its z-score), refit, re-score
+measured on VALIDATION only, so the test split stays untouched
+
+  n_T              recall 0.1364   drop +0.0695  ###########################
+  velocity_1y      recall 0.1915   drop +0.0144  #####
+  coinage_age      recall 0.1957   drop +0.0102  ####
+  recent_birth     recall 0.2021   drop +0.0038  #
+  velocity_2y      recall 0.2184   drop -0.0125  
+
+single-feature models (each feature alone, validation recall@10):
+  n_T              0.2145
+  velocity_1y      0.1146
+  velocity_2y      0.1049
+  coinage_age      0.1440
+  recent_birth     0.1166
+  (random)         0.1032

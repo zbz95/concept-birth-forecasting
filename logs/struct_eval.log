@@ -1,0 +1,41 @@
+SIMPLE RULES (no model) — validation, k=4 h=1 K=10
+  random                             recall 0.1101  hit 0.246
+  sort by degree                     recall 0.1845  hit 0.396
+  sort by papers this year (n_T)     recall 0.2294  hit 0.440
+
+STRUCTURAL FAMILIES (fitted models) — does any beat the n_T sort?
+  LOCAL only                         recall 0.1916  hit 0.385  (9 feats)
+  BOUNDARY only                      recall 0.1841  hit 0.396  (5 feats)
+  DYNAMIC only                       recall 0.1235  hit 0.276  (7 feats)
+  NEIGHBOUR only                     recall 0.1810  hit 0.361  (5 feats)
+  ALL structure (26 feats)           recall 0.2006  hit 0.388  (26 feats)
+  n_T alone                          recall 0.2145  hit 0.437  (1 feats)
+  n_T + ALL structure                recall 0.2041  hit 0.393  (27 feats)
+
+EACH STRUCTURAL FEATURE ALONE (fitted, 1 feature + its z-score)
+  ext_deg_norm             0.2207
+  deg_total                0.2204
+  deg_out                  0.2082
+  clustering               0.1822
+  pagerank_in              0.1780
+  deg_in                   0.1770
+  triangles                0.1708
+  betweenness_in           0.1683
+  nb_mean_nT               0.1657
+  is_dual_citizen          0.1521
+  ext_ratio                0.1443
+  nb_max_velocity          0.1440
+  nb_recent_share          0.1329
+  n_other_regions          0.1294
+  nb_mean_coinage_age      0.1264
+  coreness_in              0.1262
+  nb_mean_velocity         0.1228
+  deg_growth_2y            0.1216
+  edge_turnover            0.1167
+  deg_growth_1y            0.1150
+  wdeg_in                  0.1092
+  bridge_mass              0.1092
+  wdeg_growth              0.1092
+  newest_edge_age          0.1091
+  edge_mean_age            0.1071
+  new_edge_share           0.1060

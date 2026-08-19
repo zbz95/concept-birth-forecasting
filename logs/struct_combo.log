@@ -1,0 +1,20 @@
+RAW SORTS (no model at all)
+  sort by n_T (papers this year)               recall 0.2294  hit 0.440
+  sort by total degree                         recall 0.2347  hit 0.469
+  sort by external degree / region size        recall 0.2292  hit 0.453
+  sort by n_T * log(1+degree)                  recall 0.2353  hit 0.453
+
+DOES STRUCTURE ADD ON TOP OF n_T? (fitted)
+  n_T alone                                    recall 0.2145  hit 0.437
+  n_T + total degree                           recall 0.2036  hit 0.448
+  n_T + external-degree ratio                  recall 0.1788  hit 0.378
+  n_T + the 3 best structural                  recall 0.1527  hit 0.342
+  n_T + cliqueyness/centrality                 recall 0.2074  hit 0.428
+  n_T + edge-recency family                    recall 0.1761  hit 0.380
+
+CORRELATION of the best structural features with n_T (within region, z-scores)
+  deg_total        corr(z) with n_T__z = +0.537
+  ext_deg_norm     corr(z) with n_T__z = +0.579
+  deg_out          corr(z) with n_T__z = +0.579
+  pagerank_in      corr(z) with n_T__z = +0.115
+  clustering       corr(z) with n_T__z = -0.198

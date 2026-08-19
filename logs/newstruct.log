@@ -1,0 +1,19 @@
+=== best operating point: K=20 with hub removal ===
+  hub cut  none  K=20: random 0.129  combo 0.326  lift 2.52x
+  hub cut    95  K=20: random 0.136  combo 0.348  lift 2.56x
+  hub cut    80  K=20: random 0.159  combo 0.351  lift 2.21x
+
+=== NEW structural features, raw sort, K=20, hub<=80th pct ===
+  deg_total                recall 0.3540   lift 2.23x
+  deg_new_nbrs             recall 0.3449   lift 2.17x
+  ext_deg_norm             recall 0.3410   lift 2.14x
+  n_T                      recall 0.3408   lift 2.14x
+  pagerank_in              recall 0.3060   lift 1.92x
+  nb_region_entropy        recall 0.1846   lift 1.16x
+  was_recent_parent        recall 0.1675   lift 1.05x
+  edge_lift_mean           recall 0.1625   lift 1.02x
+  edge_lift_max            recall 0.1625   lift 1.02x
+  clustering               recall 0.0891   lift 0.56x
+  nb_recent_parent_share   recall 0.0859   lift 0.54x
+  second_order_deg         recall 0.0832   lift 0.52x
+  (random)                 recall 0.1590

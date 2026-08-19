@@ -1,0 +1,12 @@
+k=4, h=1, K=10 — ALL on VALIDATION (2019-2021), same run, same births
+
+scorer                                  recall@10  hit rate      AP
+-------------------------------------------------------------------
+random (baseline)                          0.1101     0.246   0.068
+degree, raw ranking (baseline)             0.1845     0.396   0.122
+degree, fitted 1-feature model             0.1770     0.384   0.117
+n_T, raw ranking (no model at all)         0.2294     0.440   0.145
+n_T, fitted 1-feature model                0.2145     0.437   0.133
+own_series, fitted 5-feature model         0.2059     0.420   0.125
+
+(6,004 births, 56 regions)

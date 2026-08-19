@@ -1,0 +1,12 @@
+  T=2016: 1,334 node rows
+  T=2017: 1,385 node rows
+  T=2018: 1,547 node rows
+  T=2019: 2,467 node rows
+  T=2020: 2,357 node rows
+  T=2021: 1,799 node rows
+
+wrote 10,889 rows, 26 structural features
+  LOCAL     9: deg_in, deg_out, deg_total, wdeg_in, clustering, triangles, pagerank_in, coreness_in, betweenness_in
+  BOUNDARY  5: ext_ratio, n_other_regions, is_dual_citizen, bridge_mass, ext_deg_norm
+  DYNAMIC   7: deg_growth_1y, deg_growth_2y, new_edge_share, edge_mean_age, newest_edge_age, edge_turnover, wdeg_growth
+  NEIGHBOUR 5: nb_mean_velocity, nb_max_velocity, nb_mean_nT, nb_recent_share, nb_mean_coinage_age
