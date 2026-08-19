@@ -1,6 +1,8 @@
 # Phase 1 — Corpus: accept report
 
-**Status: accept criteria PASS, one diagnostic tripwire FIRED. STOP-AND-ASK per Principle 6.**
+**Status: accept criteria PASS. Two issues raised and disposed of by the PI on 2026-08-19 —
+a Principle-6 band miss (accepted, band recalibrated) and a causality-gate breach
+(accepted and documented; see `reports/datasheet.md` §1).**
 
 Config hash `1b4c86efac62e9a3` · snapshot `Cornell-University/arxiv` v299 (updated 2026-08-15, CC0)
 · artifact `data/interim/papers.parquet` · figure `reports/phase1_papers_per_year.png`
@@ -42,9 +44,20 @@ consistent with arXiv's real withdrawal rate. **The shortfall is a property of t
 corpus, not a defect in the ingest.** cs.CL ∪ cs.CV through 2025-12-31 simply
 contains 269,814 papers.
 
-Awaiting PI decision. Note that widening the category set to reach the band would be
+PI accepted the measured value on 2026-08-19; band recalibrated to [255000, 285000].
+Note that widening the category set to reach the band would be
 a Principle-6 violation — the plan reserves cs.LG widening as the remedy for the
 *Phase 4 power gate*, not for a Phase 1 band miss.
+
+## Post-hoc finding — revision contamination (2026-08-19)
+
+An adversarial audit after this report was written established that the snapshot
+stores only the CURRENT title/abstract, which Phase 1 stamps with the v1 date.
+19.1% of the corpus carries text finalized in a later year than its v1 date, and
+this produces at least one phantom crystallization (`gpt-4` dated 2022 for a
+concept announced 2023-03-14). The PI accepted this and elected to document
+rather than mitigate. Full measurement, demonstrated harm, and the standing
+consequence for Phase 9 sign-off are in `reports/datasheet.md` §1.
 
 ## For the datasheet
 
