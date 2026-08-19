@@ -1,0 +1,47 @@
+building concept-year series...
+concepts in series: 136,195
+concepts with a qualifying frequency window: 52,170
+postings loaded for author grouping: 550,995 (term, year) keys
+{
+  "concepts": 136195,
+  "fates": {
+    "persisted": 47957,
+    "coinage_only": 84029,
+    "crystallized_then_declined": 4209
+  },
+  "censored": 0,
+  "author_group_tests": 52171,
+  "crystallizations_per_year": {
+    "1994": 171,
+    "1995": 31,
+    "1996": 20,
+    "1997": 4,
+    "1999": 1,
+    "2000": 6,
+    "2002": 4,
+    "2003": 2,
+    "2004": 2,
+    "2005": 6,
+    "2006": 4,
+    "2007": 12,
+    "2008": 29,
+    "2009": 92,
+    "2010": 162,
+    "2011": 151,
+    "2012": 268,
+    "2013": 468,
+    "2014": 718,
+    "2015": 1266,
+    "2016": 2115,
+    "2017": 2824,
+    "2018": 3855,
+    "2019": 4429,
+    "2020": 4999,
+    "2021": 4109,
+    "2022": 5024,
+    "2023": 9411,
+    "2024": 11983
+  },
+  "complete_through": 2024,
+  "power_gate": "PASS"
+}
