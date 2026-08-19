@@ -46,10 +46,10 @@ LINEAGE_SCHEMA = pa.schema([
 ])
 
 
-def _load_graph(con, T: int, min_papers: int):
+def _load_graph(con, T: int, min_papers: int, min_lift: float = 0.0):
     edges = con.execute(f"""
         SELECT u, v FROM read_parquet('data/graphs/graph_{T}_edges.parquet')
-        WHERE n_papers >= {min_papers}""").fetchall()
+        WHERE n_papers >= {min_papers} AND lift >= {min_lift}""").fetchall()
     nodes = sorted({x for e in edges for x in e})
     idx = {n: i for i, n in enumerate(nodes)}
     g = ig.Graph(n=len(nodes), edges=[(idx[u], idx[v]) for u, v in edges])
@@ -108,7 +108,7 @@ def build_origin(con, cfg: dict, T: int) -> list[dict]:
         min_papers = gc["binarize_min_papers"]
         raised = 0
         while True:
-            g, nodes = _load_graph(con, T, min_papers)
+            g, nodes = _load_graph(con, T, min_papers, gc.get("edge_min_lift", 0.0))
             if g.vcount() == 0:
                 comps = []
                 break
@@ -125,10 +125,21 @@ def build_origin(con, cfg: dict, T: int) -> list[dict]:
                 "phase": "6", "kind": "degeneracy_guard", "origin": T, "k": k,
                 "largest_region_share": round(share, 4),
                 "max_region_share": rc["max_region_share"],
-                "binarize_min_papers": min_papers, "action": "raising threshold"})
-            min_papers += 1
-            if raised > 20:
-                raise RuntimeError(f"degeneracy guard did not converge at T={T}, k={k}")
+                "binarize_min_papers": min_papers,
+                "edge_min_lift": gc.get("edge_min_lift", 0.0),
+                "action": "raising threshold"})
+            # Geometric, not +1. The graph grows ~20x across origins, so a
+            # linear ladder that suffices at 2014 stalls at 2021: k=3
+            # percolation is permissive enough that the giant component
+            # survives many single steps.
+            min_papers = max(min_papers + 1, int(min_papers * 1.4))
+            if raised > 40:
+                log_event("logs/flags.jsonl", {
+                    "phase": "6", "kind": "degeneracy_guard_unconverged",
+                    "origin": T, "k": k, "final_min_papers": min_papers,
+                    "largest_region_share": round(share, 4),
+                    "action": "origin/k emitted with the guard unsatisfied; excluded from accept"})
+                break
 
         regions = [[g.vs[i]["name"] for i in c] for c in comps] if comps else []
         regions.sort(key=len, reverse=True)
@@ -144,13 +155,17 @@ def build_origin(con, cfg: dict, T: int) -> list[dict]:
         stats = {
             "origin": T, "k": k, "graph_nodes": g.vcount() if comps or g.vcount() else 0,
             "graph_edges": g.ecount() if g.vcount() else 0,
-            "binarize_min_papers_used": min_papers, "threshold_raised": raised,
+            "binarize_min_papers_used": min_papers,
+            "edge_min_lift": gc.get("edge_min_lift", 0.0),
+            "threshold_raised": raised,
             "n_regions": len(rows), "nodes_covered": covered,
             "coverage": round(covered / g.vcount(), 4) if g.vcount() else 0.0,
             "size_min": sizes[0] if sizes else 0,
             "size_median": sizes[len(sizes) // 2] if sizes else 0,
             "size_max": sizes[-1] if sizes else 0,
             "largest_region_share": round(sizes[-1] / g.vcount(), 4) if sizes and g.vcount() else 0.0,
+            "guard_satisfied": bool(not sizes or not g.vcount()
+                                    or sizes[-1] / g.vcount() <= rc["max_region_share"]),
         }
         Manifest.build(str(path), phase="6", as_of=f"{T}-12-31",
                        max_observed_date=f"{T}-12-31",

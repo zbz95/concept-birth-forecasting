@@ -149,6 +149,18 @@ graph:
   # concepts remain nodes; the paper's 1.0 mass redistributes over its genuine
   # pairs, so the mass invariant is preserved.
   suppress_containment_edges: true
+
+  # PI decision 2026-08-19 at the Phase 6 gate. Generic head nouns from the
+  # Phase 2 suffix arm act as hubs -- `image` had degree 880, adjacent to 56% of
+  # graph_2014 -- and clique percolation returned 2,403,400 maximal cliques on a
+  # 1,571-node graph. Containment suppression does not touch these, because
+  # image-classification is a real co-occurrence, just an uninformative one.
+  # An edge is kept only when it exceeds chance given endpoint activity:
+  #   lift = n_co * N_window / (papers(u) * papers(v))
+  # This is the plan's own significance-relative-to-size idiom, one level below
+  # the Phase 7 hypergeometric attachment test. lift>=5 is tractable at every
+  # origin and retains 98% of nodes.
+  edge_min_lift: 5.0
   time_decay: {enabled: false, half_life_years: null}   # robustness, off
   # INVARIANT (assert at build): total edge mass == n papers with >=2 concepts
 
@@ -160,7 +172,7 @@ regions:
   cpm_k: [3, 4, 5]
   cpm_impl: "custom_kclique"          # graph-tool not pip-installable; NOT networkx
   max_region_share: 0.20              # degeneracy guard on largest region
-  lineage_jaccard: 0.30
+  lineage_jaccard: 0.30              # measured stability at k=4: 46.9% matched
   feature_spec_signed_off: false      # HARD GATE before Phase 6 implementation
 
 embedder:

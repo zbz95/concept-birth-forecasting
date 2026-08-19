@@ -52,7 +52,8 @@ EVENTS = "data/graphs/event_store.parquet"
 GDIR = Path("data/graphs")
 
 EDGE_SCHEMA = pa.schema([("u", pa.string()), ("v", pa.string()),
-                         ("weight", pa.float64()), ("n_papers", pa.int32())])
+                         ("weight", pa.float64()), ("n_papers", pa.int32()),
+                         ("lift", pa.float64())])
 
 
 def build_event_store(cfg: dict) -> dict:
@@ -169,19 +170,37 @@ def build_graph(con, cfg: dict, T: int) -> dict:
     assert n_ge2 == 0 or abs(total_mass - n_ge2) / n_ge2 < 1e-9, (
         f"graph_{T}: edge mass {total_mass:.6f} != {n_ge2} papers with >=2 concepts")
 
+    # Lift: how far a co-occurrence exceeds what the two concepts' own activity
+    # predicts. A hub like `image` co-occurs with everything, so its edges are
+    # high-count and low-lift; a specific pair is the reverse. Stored on the edge
+    # so region construction and the graph features filter on the same number.
+    win_papers = {c: 0 for c in node_papers}
+    for pid, cs in per_paper.items():
+        for c in cs:
+            win_papers[c] = win_papers.get(c, 0) + 1
+    Nw = max(1, len(per_paper))
+    lifts = []
+    for (u, v), (w, n) in zip(edges.keys(), edges.values()):
+        du, dv = win_papers.get(u, 0), win_papers.get(v, 0)
+        lifts.append((n * Nw) / (du * dv) if du and dv else 0.0)
+
     out = GDIR / f"graph_{T}_edges.parquet"
     pq.write_table(pa.Table.from_pydict({
         "u": [u for u, _ in edges], "v": [v for _, v in edges],
         "weight": [w for w, _ in edges.values()],
         "n_papers": [n for _, n in edges.values()],
+        "lift": lifts,
     }, schema=EDGE_SCHEMA), out, compression="zstd")
 
+    minlift = gc.get("edge_min_lift", 0.0)
     if gc.get("binarize_rule", "weight") == "n_papers":
         thr = gc["binarize_min_papers"]
-        keep = [(uv, n >= thr) for uv, (w, n) in edges.items()]
+        keep = [(uv, n >= thr and lf >= minlift)
+                for uv, (w, n), lf in zip(edges.keys(), edges.values(), lifts)]
     else:
         thr = gc["binarize_min_weight"]
-        keep = [(uv, w >= thr) for uv, (w, n) in edges.items()]
+        keep = [(uv, w >= thr and lf >= minlift)
+                for uv, (w, n), lf in zip(edges.keys(), edges.values(), lifts)]
     bin_edges = sum(1 for _, k in keep if k)
     bin_nodes = len({x for (u, v), k in keep if k for x in (u, v)})
 
@@ -196,6 +215,7 @@ def build_graph(con, cfg: dict, T: int) -> dict:
         "papers_all_pairs_nested": n_all_nested,
         "binarize_rule": gc.get("binarize_rule", "weight"),
         "binarize_threshold": thr,
+        "edge_min_lift": minlift,
         "vocab_T_nodes": len(vocab),
         "nodes_in_graph": len(node_papers),
         "edges_weighted": len(edges),
@@ -210,7 +230,8 @@ def build_graph(con, cfg: dict, T: int) -> dict:
                    cfg=cfg, params={k: gc[k] for k in
                                     ("graph_window", "max_concepts_per_paper",
                                      "cap_keeps", "weighting", "binarize_rule",
-                                     "binarize_min_papers", "suppress_containment_edges")},
+                                     "binarize_min_papers", "suppress_containment_edges",
+                                     "edge_min_lift")},
                    stats=stats).write(out)
     if n_capped:
         log_event("logs/flags.jsonl", {

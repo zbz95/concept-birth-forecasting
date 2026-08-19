@@ -1,14 +1,14 @@
-  T=2014  nodes   2,532 edges    337,933 | binarized   1,571 /    22,546 | coverage 100.0% capped 844
-  T=2015  nodes   3,699 edges    595,867 | binarized   2,282 /    40,106 | coverage 100.0% capped 1,920
-  T=2016  nodes   5,576 edges  1,069,895 | binarized   3,536 /    71,154 | coverage 100.0% capped 4,024
-  T=2017  nodes   8,464 edges  1,868,143 | binarized   5,345 /   119,310 | coverage 100.0% capped 7,986
-  T=2018  nodes  12,816 edges  3,141,954 | binarized   7,975 /   186,385 | coverage 100.0% capped 14,394
-  T=2019  nodes  18,461 edges  4,833,862 | binarized  11,104 /   270,350 | coverage 100.0% capped 23,165
-  T=2020  nodes  25,726 edges  7,066,537 | binarized  14,911 /   368,057 | coverage 100.0% capped 34,754
-  T=2021  nodes  33,753 edges  9,321,585 | binarized  18,243 /   448,076 | coverage 100.0% capped 46,172
-  T=2022  nodes  42,683 edges 11,564,717 | binarized  21,292 /   511,373 | coverage 100.0% capped 56,983
-  T=2023  nodes  54,235 edges 14,460,275 | binarized  24,960 /   594,199 | coverage 100.0% capped 71,121
-  T=2024  nodes  69,007 edges 18,876,691 | binarized  30,191 /   741,929 | coverage 100.0% capped 93,851
+  T=2014  nodes   2,532 edges    337,920 | binarized   1,347 /     3,671 | coverage 100.0% capped 844
+  T=2015  nodes   3,699 edges    595,871 | binarized   2,022 /     6,406 | coverage 100.0% capped 1,920
+  T=2016  nodes   5,576 edges  1,069,898 | binarized   3,196 /    11,851 | coverage 100.0% capped 4,024
+  T=2017  nodes   8,464 edges  1,868,156 | binarized   4,978 /    22,374 | coverage 100.0% capped 7,986
+  T=2018  nodes  12,816 edges  3,141,942 | binarized   7,611 /    39,314 | coverage 100.0% capped 14,394
+  T=2019  nodes  18,461 edges  4,833,902 | binarized  10,728 /    62,642 | coverage 100.0% capped 23,165
+  T=2020  nodes  25,726 edges  7,066,530 | binarized  14,573 /    91,453 | coverage 100.0% capped 34,754
+  T=2021  nodes  33,753 edges  9,321,575 | binarized  17,893 /   116,453 | coverage 100.0% capped 46,172
+  T=2022  nodes  42,683 edges 11,564,711 | binarized  20,942 /   137,597 | coverage 100.0% capped 56,983
+  T=2023  nodes  54,235 edges 14,460,294 | binarized  24,567 /   161,733 | coverage 100.0% capped 71,121
+  T=2024  nodes  69,007 edges 18,876,714 | binarized  29,617 /   202,891 | coverage 100.0% capped 93,851
 [
   {
     "origin": 2014,
@@ -25,13 +25,14 @@
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 2645,
     "nodes_in_graph": 2532,
-    "edges_weighted": 337933,
+    "edges_weighted": 337920,
     "total_edge_mass": 3812.0,
     "invariant_holds": true,
-    "nodes_binarized": 1571,
-    "edges_binarized": 22546
+    "nodes_binarized": 1347,
+    "edges_binarized": 3671
   },
   {
     "origin": 2015,
@@ -44,17 +45,18 @@
     "papers_with_2plus_concepts": 6028,
     "coverage_2plus": 0.9997,
     "papers_capped": 1920,
-    "containment_pairs_suppressed": 35042,
+    "containment_pairs_suppressed": 35044,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 3830,
     "nodes_in_graph": 3699,
-    "edges_weighted": 595867,
+    "edges_weighted": 595871,
     "total_edge_mass": 6028.0,
     "invariant_holds": true,
-    "nodes_binarized": 2282,
-    "edges_binarized": 40106
+    "nodes_binarized": 2022,
+    "edges_binarized": 6406
   },
   {
     "origin": 2016,
@@ -67,17 +69,18 @@
     "papers_with_2plus_concepts": 10050,
     "coverage_2plus": 0.9999,
     "papers_capped": 4024,
-    "containment_pairs_suppressed": 67833,
+    "containment_pairs_suppressed": 67834,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 5743,
     "nodes_in_graph": 5576,
-    "edges_weighted": 1069895,
+    "edges_weighted": 1069898,
     "total_edge_mass": 10050.0,
     "invariant_holds": true,
-    "nodes_binarized": 3536,
-    "edges_binarized": 71154
+    "nodes_binarized": 3196,
+    "edges_binarized": 11851
   },
   {
     "origin": 2017,
@@ -90,17 +93,18 @@
     "papers_with_2plus_concepts": 16178,
     "coverage_2plus": 0.9999,
     "papers_capped": 7986,
-    "containment_pairs_suppressed": 121341,
+    "containment_pairs_suppressed": 121335,
     "papers_all_pairs_nested": 1,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 8682,
     "nodes_in_graph": 8464,
-    "edges_weighted": 1868143,
+    "edges_weighted": 1868156,
     "total_edge_mass": 16178.0,
     "invariant_holds": true,
-    "nodes_binarized": 5345,
-    "edges_binarized": 119310
+    "nodes_binarized": 4978,
+    "edges_binarized": 22374
   },
   {
     "origin": 2018,
@@ -113,17 +117,18 @@
     "papers_with_2plus_concepts": 25289,
     "coverage_2plus": 1.0,
     "papers_capped": 14394,
-    "containment_pairs_suppressed": 204325,
+    "containment_pairs_suppressed": 204324,
     "papers_all_pairs_nested": 1,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 13112,
     "nodes_in_graph": 12816,
-    "edges_weighted": 3141954,
+    "edges_weighted": 3141942,
     "total_edge_mass": 25289.0,
     "invariant_holds": true,
-    "nodes_binarized": 7975,
-    "edges_binarized": 186385
+    "nodes_binarized": 7611,
+    "edges_binarized": 39314
   },
   {
     "origin": 2019,
@@ -136,17 +141,18 @@
     "papers_with_2plus_concepts": 36753,
     "coverage_2plus": 1.0,
     "papers_capped": 23165,
-    "containment_pairs_suppressed": 312235,
+    "containment_pairs_suppressed": 312238,
     "papers_all_pairs_nested": 1,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 18805,
     "nodes_in_graph": 18461,
-    "edges_weighted": 4833862,
+    "edges_weighted": 4833902,
     "total_edge_mass": 36753.000001,
     "invariant_holds": true,
-    "nodes_binarized": 11104,
-    "edges_binarized": 270350
+    "nodes_binarized": 10728,
+    "edges_binarized": 62642
   },
   {
     "origin": 2020,
@@ -159,17 +165,18 @@
     "papers_with_2plus_concepts": 50831,
     "coverage_2plus": 1.0,
     "papers_capped": 34754,
-    "containment_pairs_suppressed": 443075,
+    "containment_pairs_suppressed": 443068,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 26087,
     "nodes_in_graph": 25726,
-    "edges_weighted": 7066537,
+    "edges_weighted": 7066530,
     "total_edge_mass": 50831.000004,
     "invariant_holds": true,
-    "nodes_binarized": 14911,
-    "edges_binarized": 368057
+    "nodes_binarized": 14573,
+    "edges_binarized": 91453
   },
   {
     "origin": 2021,
@@ -182,17 +189,18 @@
     "papers_with_2plus_concepts": 63507,
     "coverage_2plus": 1.0,
     "papers_capped": 46172,
-    "containment_pairs_suppressed": 556432,
+    "containment_pairs_suppressed": 556439,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 34174,
     "nodes_in_graph": 33753,
-    "edges_weighted": 9321585,
+    "edges_weighted": 9321575,
     "total_edge_mass": 63507.000006,
     "invariant_holds": true,
-    "nodes_binarized": 18243,
-    "edges_binarized": 448076
+    "nodes_binarized": 17893,
+    "edges_binarized": 116453
   },
   {
     "origin": 2022,
@@ -205,17 +213,18 @@
     "papers_with_2plus_concepts": 74809,
     "coverage_2plus": 1.0,
     "papers_capped": 56983,
-    "containment_pairs_suppressed": 654658,
+    "containment_pairs_suppressed": 654659,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 43140,
     "nodes_in_graph": 42683,
-    "edges_weighted": 11564717,
+    "edges_weighted": 11564711,
     "total_edge_mass": 74809.000009,
     "invariant_holds": true,
-    "nodes_binarized": 21292,
-    "edges_binarized": 511373
+    "nodes_binarized": 20942,
+    "edges_binarized": 137597
   },
   {
     "origin": 2023,
@@ -228,17 +237,18 @@
     "papers_with_2plus_concepts": 89737,
     "coverage_2plus": 1.0,
     "papers_capped": 71121,
-    "containment_pairs_suppressed": 769349,
+    "containment_pairs_suppressed": 769331,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 54857,
     "nodes_in_graph": 54235,
-    "edges_weighted": 14460275,
+    "edges_weighted": 14460294,
     "total_edge_mass": 89737.000013,
     "invariant_holds": true,
-    "nodes_binarized": 24960,
-    "edges_binarized": 594199
+    "nodes_binarized": 24567,
+    "edges_binarized": 161733
   },
   {
     "origin": 2024,
@@ -251,16 +261,17 @@
     "papers_with_2plus_concepts": 114465,
     "coverage_2plus": 1.0,
     "papers_capped": 93851,
-    "containment_pairs_suppressed": 955052,
+    "containment_pairs_suppressed": 955014,
     "papers_all_pairs_nested": 0,
     "binarize_rule": "n_papers",
     "binarize_threshold": 5,
+    "edge_min_lift": 5.0,
     "vocab_T_nodes": 69862,
     "nodes_in_graph": 69007,
-    "edges_weighted": 18876691,
+    "edges_weighted": 18876714,
     "total_edge_mass": 114465.000019,
     "invariant_holds": true,
-    "nodes_binarized": 30191,
-    "edges_binarized": 741929
+    "nodes_binarized": 29617,
+    "edges_binarized": 202891
   }
 ]
