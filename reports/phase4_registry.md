@@ -110,3 +110,14 @@ verdict set is {correct, wrong-date, wrong-sense, ambiguous}; the sample above
 suggests a fifth is needed — **not-a-concept** — since `rigorous experiment` has
 neither a wrong date nor a wrong sense. The agreement rate becomes the registry's
 published error bar.
+
+## Reading the metabolism figure — one caveat
+
+`reports/phase4_births_per_year.png`, right panel, shows coinages peaking around
+2017–2018 and falling steeply through 2025 while crystallizations keep rising,
+the two curves crossing near 2023. **The coinage decline is a right-censoring
+artefact, not a slowdown in the field.** A term only enters the registry universe
+once it clears `min_total_freq`, so a concept coined in 2024 has had barely a year
+to accumulate the nine papers that make it visible, and one coined in 2025 has had
+none. The true recent coinage rate is unobservable until those terms mature. Do
+not read the crossing as the field coining less and consolidating more.
