@@ -132,7 +132,23 @@ graph:
   max_concepts_per_paper: 25          # projection layer ONLY; keep lowest-DF
   cap_keeps: "lowest_document_frequency"
   weighting: "fractional"             # each paper spends exactly 1.0 edge mass
-  binarize_min_weight: 1.0
+  # PI decision 2026-08-19 at the Phase 5 gate. binarize_min_weight=1.0 was
+  # commented "one focused paper" and is exactly that for a 2-concept paper, but
+  # the median paper carries 25 concepts and spreads 1.0 over C(25,2)=300 pairs
+  # at 0.00333 each -- so the threshold demanded ~300 co-occurrences and left a
+  # 230-node graph against a 15-40k band. Replaced by a scale-free rule that does
+  # not depend on how many concepts a paper happens to carry.
+  binarize_rule: "n_papers"           # {n_papers | weight}
+  binarize_min_papers: 5              # an edge exists if >= 5 papers name both
+  binarize_min_weight: 1.0            # retained for the weight-rule robustness arm
+
+  # PI decision 2026-08-19: 36% of concept slots were a contiguous sub-phrase of
+  # another concept on the SAME paper, so those pairs co-occurred by construction
+  # and dominated the edge weights (the top neighbours of `object detection` were
+  # `detection`, `object`, `object detector`). Such pairs now form no edge. Both
+  # concepts remain nodes; the paper's 1.0 mass redistributes over its genuine
+  # pairs, so the mass invariant is preserved.
+  suppress_containment_edges: true
   time_decay: {enabled: false, half_life_years: null}   # robustness, off
   # INVARIANT (assert at build): total edge mass == n papers with >=2 concepts
 

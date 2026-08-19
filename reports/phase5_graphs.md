@@ -111,3 +111,75 @@ normally would, and it is applied *after* nesting inflates the count — so it i
 often discarding genuine concepts in order to keep sub-phrases of others. Fixing
 decision 2 would relieve this substantially. All capping is logged and applies to
 the projection layer only; the event store is untouched.
+
+---
+
+# Decisions applied (2026-08-19)
+
+**Binarization: `n_papers >= 5`.** An edge exists when at least five papers name
+both concepts. Scale-free and independent of concepts-per-paper, which is what
+broke the weight threshold.
+
+**Containment edges suppressed.** No edge is created between two concepts when
+one is a contiguous sub-phrase of the other. Both remain nodes; the paper's 1.0
+mass redistributes over its genuine pairs.
+
+## Result
+
+| T | weighted nodes | binarized nodes | binarized edges | giant share |
+|---:|---:|---:|---:|---:|
+| 2016 | 5,576 | 3,536 | 71,154 | — |
+| 2019 | 18,461 | 11,104 | 270,350 | 99.6% |
+| 2021 | 33,753 | 18,243 | 448,076 | — |
+| 2022 | 42,683 | 21,292 | 511,373 | 99.3% |
+| 2024 | 69,007 | 30,191 | 741,929 | 99.2% |
+
+Containment suppression removed 18,218 pairs at T=2014 rising to 955,052 at
+T=2024. Exactly one paper (at T=2017, 2018, 2019) had *every* pair nested and so
+contributes no edges at all; those are counted separately and excluded from the
+mass denominator.
+
+**The mass invariant holds at every origin**, with redistribution: relative drift
+ranges from 0 to 1.66×10⁻¹⁰, well inside the 10⁻⁹ assert. (Two checks in this
+report initially reported failures that were an absolute 10⁻⁶ tolerance applied
+to a sum of order 10⁵ — the same mistake the build's own assert had before it
+was made relative. The invariant was never violated.)
+
+## The containment fix is visible in the graph
+
+Top-weighted neighbours of `object detection`, before and after:
+
+| | neighbours |
+|---|---|
+| before | **detection, object**, detector, object detector, image |
+| T=2017 after | detector, proposal, pascal, image, box, cnn, network, map |
+| T=2020 after | detector, object detector, image, box, instance, coco, scene |
+| T=2023 after | detector, object detector, computer vision, box, code, vision |
+
+The lexical family is gone and what remains is topical: detectors, region
+proposals, PASCAL and COCO, bounding boxes. `object detector` survives as a
+neighbour because neither phrase contains the other — a real association, not a
+containment artefact.
+
+## Band status — the same shape as Phase 3
+
+| | in band |
+|---|---|
+| edges (10⁵–10⁶) | T ≥ 2017 |
+| nodes (15–40k) | T ≥ 2021 |
+
+Early origins fall below on both counts. This is the Phase 3 pattern repeating:
+the plan's bands are single ranges, but graph size is a function of T tracking a
+corpus that grows 19× across the period, so no fixed rule can be in band at both
+ends. The Phase 3 band was recalibrated to a per-origin curve for exactly this
+reason and the same treatment applies here — recorded rather than acted on,
+since the band is the PI's.
+
+## Accept criteria
+
+- yearly degree distributions heavy-tailed with smooth drift — **pass**
+- giant-component share — **pass** (99.2–99.6%)
+- fraction of papers with <2 vocabulary concepts — **pass** (coverage 100%)
+- ego-net of `object detection`, YOLO only in views T ≥ 2016 — **pass**
+  (`yolo` has zero edges through T=2016, first appears T=2017)
+- mass invariant — **pass** at every origin

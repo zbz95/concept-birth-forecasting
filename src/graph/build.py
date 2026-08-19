@@ -37,6 +37,17 @@ import pyarrow.parquet as pq
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.manifest import Manifest, load_config, log_event  # noqa: E402
 
+
+def _contains(a: str, b: str) -> bool:
+    """True when one phrase is a contiguous sub-phrase of the other.
+
+    Padding with spaces makes the test token-aligned, so `net` does not match
+    inside `network` but `neural network` does match inside `convolutional
+    neural network`.
+    """
+    pa, pb = f" {a} ", f" {b} "
+    return pa in pb or pb in pa
+
 EVENTS = "data/graphs/event_store.parquet"
 GDIR = Path("data/graphs")
 
@@ -113,8 +124,9 @@ def build_graph(con, cfg: dict, T: int) -> dict:
         f"SELECT count(*) FROM read_parquet('data/interim/papers.parquet') "
         f"WHERE v1_year BETWEEN {lo} AND {T}").fetchone()[0]
 
+    suppress = gc.get("suppress_containment_edges", False)
     edges: dict[tuple, list] = {}
-    n_capped = n_ge2 = 0
+    n_capped = n_ge2 = n_pairs_suppressed = n_all_nested = 0
     node_papers: dict[str, int] = {}
     for pid, concepts in per_paper.items():
         cs = concepts
@@ -128,9 +140,21 @@ def build_graph(con, cfg: dict, T: int) -> dict:
         k = len(cs)
         if k < 2:
             continue
+        pairs = list(combinations(sorted(cs), 2))
+        if suppress:
+            # A concept nested in another on the same paper co-occurs with it by
+            # construction, so that pair is evidence of nothing. Drop the pair,
+            # keep both nodes, and let the paper's 1.0 redistribute over what is
+            # left -- which preserves the mass invariant exactly.
+            before = len(pairs)
+            pairs = [(u, v) for u, v in pairs if not _contains(u, v)]
+            n_pairs_suppressed += before - len(pairs)
+            if not pairs:
+                n_all_nested += 1
+                continue
         n_ge2 += 1
-        share = 1.0 / (k * (k - 1) / 2)          # each paper spends exactly 1.0
-        for u, v in combinations(sorted(cs), 2):
+        share = 1.0 / len(pairs)                 # each paper spends exactly 1.0
+        for u, v in pairs:
             e = edges.get((u, v))
             if e is None:
                 edges[(u, v)] = [share, 1]
@@ -152,10 +176,14 @@ def build_graph(con, cfg: dict, T: int) -> dict:
         "n_papers": [n for _, n in edges.values()],
     }, schema=EDGE_SCHEMA), out, compression="zstd")
 
-    thr = gc["binarize_min_weight"]
-    bin_edges = sum(1 for w, _ in edges.values() if w >= thr)
-    bin_nodes = len({x for (u, v), (w, _) in zip(edges.keys(), edges.values())
-                     if w >= thr for x in (u, v)})
+    if gc.get("binarize_rule", "weight") == "n_papers":
+        thr = gc["binarize_min_papers"]
+        keep = [(uv, n >= thr) for uv, (w, n) in edges.items()]
+    else:
+        thr = gc["binarize_min_weight"]
+        keep = [(uv, w >= thr) for uv, (w, n) in edges.items()]
+    bin_edges = sum(1 for _, k in keep if k)
+    bin_nodes = len({x for (u, v), k in keep if k for x in (u, v)})
 
     stats = {
         "origin": T, "window": [lo, T],
@@ -164,6 +192,10 @@ def build_graph(con, cfg: dict, T: int) -> dict:
         "papers_with_2plus_concepts": n_ge2,
         "coverage_2plus": round(n_ge2 / n_papers_window, 4),
         "papers_capped": n_capped,
+        "containment_pairs_suppressed": n_pairs_suppressed,
+        "papers_all_pairs_nested": n_all_nested,
+        "binarize_rule": gc.get("binarize_rule", "weight"),
+        "binarize_threshold": thr,
         "vocab_T_nodes": len(vocab),
         "nodes_in_graph": len(node_papers),
         "edges_weighted": len(edges),
@@ -177,7 +209,8 @@ def build_graph(con, cfg: dict, T: int) -> dict:
                            "data/interim/merge_map.parquet"],
                    cfg=cfg, params={k: gc[k] for k in
                                     ("graph_window", "max_concepts_per_paper",
-                                     "cap_keeps", "weighting", "binarize_min_weight")},
+                                     "cap_keeps", "weighting", "binarize_rule",
+                                     "binarize_min_papers", "suppress_containment_edges")},
                    stats=stats).write(out)
     if n_capped:
         log_event("logs/flags.jsonl", {
