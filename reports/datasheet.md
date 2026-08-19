@@ -161,3 +161,39 @@ same post-hoc-metadata issue as §1.
   and one long form holding ≥70% of attestations, measured on *normalized* long
   forms. 300 ambiguous acronyms (`bnn`, `lda`, `mrf`, `cam`, `cad`) are refused
   and queued for human review rather than merged.
+
+## 8. LLM judge (enabled 2026-08-19 at the Phase 4 gate)
+
+The Phase 3 decision to run judge-off was revised. Deterministic pattern kills
+could not separate `diffusion model` from `thorough analysis` — both are a
+modifier plus a head that is generic in isolation — and a generic-head rule that
+removed the latter also removed the former, one of the plan's own spot-list
+terms.
+
+All 106,960 concept labels were judged in-session by Claude subagents on the
+Max plan (not the API), 214 batches of 500, content-free criteria only.
+**34.0% dropped.** Verdicts: `data/interim/judge_verdicts.parquet`. Deletions
+logged reversibly in `logs/kills.jsonl`; the kept set is always recoverable.
+
+**Hindsight was measured, not assumed.** Each batch showed the bare phrase with
+no counts, dates, or example papers; the list was shuffled with a fixed seed
+rather than frequency-ordered. The audit then compared keep-rates for
+crystallized-then-declined concepts (real, never famous) against persisted ones
+(real, famous), matched on size. All three adequately-populated strata gave
+**negative** gaps — −0.008, −0.057, −0.146 — i.e. the judge kept the *unfamous*
+group slightly more. No evidence of familiarity leakage.
+
+Residual risk that this audit cannot rule out: a judge could favour terms whose
+*form* correlates with eventual fame (technical-looking compounds) without ever
+recognising them. The declined-vs-persisted test controls for size, not for
+form. Anyone relying on the registry should know the filter is form-based by
+construction and that form is not independent of what becomes important.
+
+Both arms are retained per the plan's `report_both_arms`: judge-on is primary,
+judge-off preserved as `births_nojudge.parquet` and `data/interim/vocab_nojudge/`.
+
+**The judge does not close the Phase 4 tripwire.** Crystallizations/yr fall from
+4,429–11,983 to 2,836–8,016, still 3–8× above the plan's low-10²–10³ band. The
+surviving excess is real-but-mundane terminology (`vessel segmentation`,
+`hessian matrix`, `deformable attention`), which suggests the band was estimated
+for a smaller vocabulary than this corpus and threshold combination produces.

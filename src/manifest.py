@@ -190,3 +190,29 @@ def log_event(path: str | Path, event: dict) -> None:
     row.setdefault("event_id", sha256_obj(row)[:16])
     with open(p, "a") as fh:
         fh.write(json.dumps(row, sort_keys=True, default=str) + "\n")
+
+
+# ---------------------------------------------------------------------------
+# LLM-judge filter
+# ---------------------------------------------------------------------------
+
+def judge_dropped(cfg: dict | None = None) -> set[str]:
+    """Concept labels the LLM judge marked DROP, or empty if the judge is off.
+
+    Verdicts are keyed by the concept label as exported for judging — the union
+    of cluster labels across every vocab_T — so applying them at the cluster
+    level is exactly what was judged. A term with no verdict is kept: absence of
+    a judgement is never evidence for deletion.
+    """
+    cfg = cfg or load_config()
+    if not cfg.get("llm_judge", {}).get("enabled"):
+        return set()
+    path = Path("data/interim/judge_verdicts.parquet")
+    if not path.exists():
+        raise FileNotFoundError(
+            "llm_judge.enabled is true but data/interim/judge_verdicts.parquet is "
+            "missing — run src/extraction/judge_ingest.py first")
+    import duckdb
+    rows = duckdb.connect().execute(
+        f"SELECT term FROM read_parquet('{path}') WHERE verdict = 'DROP'").fetchall()
+    return {t for (t,) in rows}

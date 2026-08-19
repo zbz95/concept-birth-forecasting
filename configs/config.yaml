@@ -83,9 +83,20 @@ merges:
   merge_log: "logs/merges.jsonl"      # append-only, undo column
 
 llm_judge:
-  enabled: false                      # PI decision 2026-08-19: judge-off is the v1 vocabulary.
-                                      # Deterministic filters already cover the judge's remit
-                                      # (nominal-head + generic-head kills). Sensitivity -> future work.
+  enabled: true                       # PI decision 2026-08-19, REVISED at the Phase 4 gate.
+                                      # Deterministic rules could not separate `diffusion model`
+                                      # from `thorough analysis` without killing the former, so the
+                                      # judge was run after all -- in-session via subagents on the
+                                      # Max plan, not the API. 106,960 terms judged, 34.0% dropped.
+                                      # Hindsight audit CLEARS: keep-rate gaps of -0.008, -0.057,
+                                      # -0.146 across the three adequately-populated strata, i.e.
+                                      # declined concepts kept slightly MORE than persisted ones --
+                                      # the opposite direction from familiarity bias.
+  run_mode: "in_session_subagents"    # not the batch API; no API key involved
+  verdicts: "data/interim/judge_verdicts.parquet"
+  judge_off_arm:                      # preserved for report_both_arms
+    vocab: "data/interim/vocab_nojudge/"
+    registry: "data/registry/births_nojudge.parquet"
   criteria: ["not_a_noun_phrase", "generic"]
   forbidden_criteria: ["familiarity", "novelty", "importance"]
   audit_sample_n: 200

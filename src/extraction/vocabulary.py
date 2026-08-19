@@ -32,7 +32,7 @@ import duckdb
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.extraction.filters import kill_reason  # noqa: E402
-from src.manifest import Manifest, load_config  # noqa: E402
+from src.manifest import Manifest, judge_dropped, load_config  # noqa: E402
 
 LEMMA_POS_YEAR = "data/interim/lemma_pos_year.parquet"
 OUTDIR = Path("data/interim/vocab")
@@ -119,6 +119,17 @@ def build_origin(con, cfg: dict, T: int) -> dict:
     # A member whose merge is not yet effective stands alone at this origin.
     cluster = {c: (cl_of.get(c, c) if cl_of.get(c, c) in surv else c) for c in surv}
 
+    # 5b. LLM-judge filter, applied at the level that was actually judged: the
+    # concept label. A term whose label the judge dropped leaves the vocabulary;
+    # a term with no verdict is kept, since absence of a judgement is not
+    # evidence for deletion.
+    dropped = judge_dropped(cfg)
+    n_judge_dropped = 0
+    if dropped:
+        before = len(cluster)
+        cluster = {c: cl for c, cl in cluster.items() if cl not in dropped}
+        n_judge_dropped = before - len(cluster)
+
     # 6. cluster-level df_T, deduplicated per paper
     con.execute("DROP TABLE IF EXISTS t2c")
     con.execute("CREATE TEMP TABLE t2c (term VARCHAR, cluster VARCHAR)")
@@ -151,6 +162,8 @@ def build_origin(con, cfg: dict, T: int) -> dict:
         for f in (0, 5, 10, 15, 25, 50)}
 
     stats = {"origin": T, "terms_at_min_df": len(freq), "killed": dict(kills),
+             "judge_dropped_terms": n_judge_dropped,
+             "judge_enabled": bool(dropped),
              "surviving_terms": len(surv), "clusters": n_clusters,
              "multi_member_clusters": int(n_multi or 0), "clusters_by_c_value_floor": grid}
     Manifest.build(str(out), phase="3", as_of=cutoff, max_observed_date=cutoff,

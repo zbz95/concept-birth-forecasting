@@ -36,7 +36,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
-from src.manifest import Manifest, load_config, log_event  # noqa: E402
+from src.manifest import Manifest, judge_dropped, load_config, log_event  # noqa: E402
 
 OUT = "data/registry/births.parquet"
 SERIES = "data/registry/concept_year.parquet"
@@ -125,9 +125,16 @@ def build(cfg: dict | None = None) -> dict:
     con = duckdb.connect()
     con.execute(f"PRAGMA memory_limit='{cfg['runtime']['mem_budget_gb'] - 3}GB'")
 
+    dropped = judge_dropped(cfg)
     series: dict[str, dict[int, int]] = defaultdict(dict)
+    n_judge_dropped = 0
     for c, y, n in con.execute(f"SELECT concept, year, n_papers FROM read_parquet('{SERIES}')").fetchall():
+        if c in dropped:
+            continue
         series[c][y] = n
+    if dropped:
+        n_judge_dropped = len(dropped)
+        print(f"llm judge active: {len(dropped):,} concept labels dropped", flush=True)
     print(f"concepts in series: {len(series):,}", flush=True)
 
     # Members of each cluster, for the author-group query.
@@ -259,6 +266,7 @@ def build(cfg: dict | None = None) -> dict:
     con.close()
 
     stats = {"concepts": len(rows), "fates": dict(fates), "censored": censored_n,
+             "judge_enabled": bool(dropped), "judge_dropped_labels": n_judge_dropped,
              "author_group_tests": n_group_tests,
              "crystallizations_per_year": {int(y): int(n) for y, n in per_year.items()},
              "complete_through": complete_through}

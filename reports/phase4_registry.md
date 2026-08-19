@@ -121,3 +121,108 @@ once it clears `min_total_freq`, so a concept coined in 2024 has had barely a ye
 to accumulate the nine papers that make it visible, and one coined in 2025 has had
 none. The true recent coinage rate is unobservable until those terms mature. Do
 not read the crossing as the field coining less and consolidating more.
+
+---
+
+# Judge applied — both arms (2026-08-19)
+
+The Phase 3 decision to skip the LLM judge was revised here, because no
+deterministic rule separates `diffusion model` from `thorough analysis` without
+killing the former. The judge was run **in-session via subagents on the Max
+plan**, not through the API — a Max subscription does not grant API access, but
+Claude Code *is* the subscription, so no key or separate billing was involved.
+
+All 106,960 concept labels judged across 214 batches of 500. Zero malformed
+lines, zero misalignment. **34.0% dropped** (36,397 of 106,960).
+
+## Hindsight audit — clears
+
+The plan forbids the judge from using familiarity, novelty or importance. That
+is not stylistic: a 2026-vintage model knows which concepts became famous, and a
+filter that keeps `diffusion model` *because it recognises it* while dropping an
+obscure but real 2019 term writes hindsight into `vocab_2019`, which is an input
+to forecasting 2020.
+
+Structural precautions: each batch showed the bare phrase only — no counts, no
+dates, no example papers — the list was shuffled with a fixed seed rather than
+frequency-ordered, and batches were dealt round-robin across judges.
+
+Then it was measured rather than assumed. Concepts that crystallized and
+**declined** are real concepts that never became famous; those that **persisted**
+did. Within a size stratum a form-blind judge keeps both at the same rate.
+
+| stratum (total papers) | persisted keep-rate | declined keep-rate | gap |
+|---|---:|---:|---:|
+| 9–25 | 0.755 (n=147) | 0.763 (n=688) | **−0.008** |
+| 26–60 | 0.675 (n=6,966) | 0.732 (n=2,880) | **−0.057** |
+| 61–150 | 0.687 (n=10,469) | 0.833 (n=389) | **−0.146** |
+| 151–500 | 0.709 (n=5,830) | 0.600 (n=5) | +0.109 — *ignored, n=5* |
+
+All three adequately-populated strata are **negative**: the judge kept declined
+concepts slightly *more* than persisted ones, the opposite direction from
+familiarity bias. Consistent with form-blindness — famous concepts are often
+short common words (`transformer`, `gan`) that read as generic in isolation,
+while obscure ones are obviously technical compounds.
+
+*A bug in the detector was found and fixed while reading this.* It took
+`max(gaps)` with no minimum-sample guard, so a stratum containing three declined
+concepts produced a +0.386 "gap" and outvoted three well-populated strata
+pointing the other way, flagging hindsight that was not there. Strata now require
+n ≥ 30 in both groups; small-n strata are reported but excluded.
+
+## Validation — nothing that should survive was lost
+
+All ten Phase-2 spot-list terms KEEP. So do `vit`, `llms`, `stable diffusion`,
+`chain-of-thought`, `knowledge distillation`, `neural architecture search`,
+`federated learning`, `contrastive learning`, `few-shot learning`,
+`zero-shot learning`, `wav2vec2`, `gpt-4`, and obscure real concepts like
+`liveness detection` and `molecular property prediction`.
+
+Dropped as intended: `rigorous experiment`, `thorough analysis`,
+`competitive accuracy`, `product quality`, `inherent weakness`,
+`conventional image`, `different architecture`, `comprehensive result`,
+`cognitive task`, `carlo tree`.
+
+**Every spot-list crystallization year is identical across arms** — nerf 2020,
+bert 2018, gan 2015, diffusion model 2020, vit 2021, capsule network 2018,
+stable diffusion 2022, transformer 2015. The judge removed concepts without
+perturbing the dates of those that survived.
+
+## Both arms
+
+| | judge OFF | judge ON | Δ |
+|---|---:|---:|---:|
+| concepts | 136,195 | 100,295 | −26% |
+| persisted | 47,957 | 32,312 | −33% |
+| crystallized-then-declined | 4,209 | 3,130 | −26% |
+| coinage-only | 63,418 | 47,353 | −25% |
+| censored | 20,611 | 17,500 | −15% |
+
+Crystallizations per year, and the share the judge removed:
+
+| year | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 |
+|---|---:|---:|---:|---:|---:|---:|
+| judge off | 4,429 | 4,999 | 4,109 | 5,024 | 9,411 | 11,983 |
+| **judge on** | **3,107** | **3,435** | **2,836** | **3,400** | **5,902** | **8,016** |
+| removed | 30% | 31% | 31% | 32% | 37% | 33% |
+
+Power gate still **PASS** with large margin (`power_floor` = 50).
+
+Artifacts: judge-on is primary (`data/registry/births.parquet`,
+`data/interim/vocab/`); judge-off is preserved as
+`births_nojudge.parquet` and `data/interim/vocab_nojudge/` for the plan's
+`report_both_arms`. Verdicts in `data/interim/judge_verdicts.parquet`, deletions
+logged reversibly in `logs/kills.jsonl`.
+
+## The tripwire still does not close
+
+The band is low 10²–10³. Judge-on gives 2,836–8,016 in the test window — still
+**3–8× above**. Non-concept terminology was part of the story, not all of it.
+
+A post-judge draw from the audit sample: `deformable attention`,
+`vessel segmentation`, `hessian matrix`, `feature adapter`,
+`architecture search algorithm`, `lookup table`, `mtl` — alongside residual
+marginals like `scenario lack`, `synthesis problem`, `benchmark task`. The
+surviving excess is mostly **real but mundane** concepts, not junk. That points
+at the band being wrong for this corpus and threshold combination rather than at
+a filter still needing tightening.
