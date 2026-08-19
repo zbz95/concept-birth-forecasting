@@ -1,0 +1,101 @@
+building birth profiles...
+   {'births_with_profile': 35441, 'mean_profile_len': 10.0}
+  T=2016: 1,231 parent-set units  {'sub_profile': 731, 'both': 6, 'triangle': 494}
+  T=2017: 1,235 parent-set units  {'sub_profile': 735, 'both': 7, 'triangle': 493}
+  T=2018: 1,239 parent-set units  {'sub_profile': 739, 'both': 6, 'triangle': 494}
+  T=2019: 1,242 parent-set units  {'sub_profile': 742, 'both': 8, 'triangle': 492}
+  T=2020: 1,239 parent-set units  {'sub_profile': 739, 'both': 11, 'triangle': 489}
+  T=2021: 1,232 parent-set units  {'sub_profile': 732, 'both': 18, 'triangle': 482}
+  T=2022: 1,227 parent-set units  {'sub_profile': 727, 'both': 23, 'triangle': 477}
+  T=2023: 1,229 parent-set units  {'sub_profile': 729, 'both': 21, 'triangle': 479}
+  T=2024: 1,238 parent-set units  {'sub_profile': 738, 'both': 12, 'triangle': 488}
+{
+  "rows": 11112,
+  "origins": [
+    2016,
+    2024
+  ],
+  "per_origin": [
+    {
+      "origin": 2016,
+      "rows": 1231,
+      "by_generator": {
+        "sub_profile": 731,
+        "both": 6,
+        "triangle": 494
+      }
+    },
+    {
+      "origin": 2017,
+      "rows": 1235,
+      "by_generator": {
+        "sub_profile": 735,
+        "both": 7,
+        "triangle": 493
+      }
+    },
+    {
+      "origin": 2018,
+      "rows": 1239,
+      "by_generator": {
+        "sub_profile": 739,
+        "both": 6,
+        "triangle": 494
+      }
+    },
+    {
+      "origin": 2019,
+      "rows": 1242,
+      "by_generator": {
+        "sub_profile": 742,
+        "both": 8,
+        "triangle": 492
+      }
+    },
+    {
+      "origin": 2020,
+      "rows": 1239,
+      "by_generator": {
+        "sub_profile": 739,
+        "both": 11,
+        "triangle": 489
+      }
+    },
+    {
+      "origin": 2021,
+      "rows": 1232,
+      "by_generator": {
+        "sub_profile": 732,
+        "both": 18,
+        "triangle": 482
+      }
+    },
+    {
+      "origin": 2022,
+      "rows": 1227,
+      "by_generator": {
+        "sub_profile": 727,
+        "both": 23,
+        "triangle": 477
+      }
+    },
+    {
+      "origin": 2023,
+      "rows": 1229,
+      "by_generator": {
+        "sub_profile": 729,
+        "both": 21,
+        "triangle": 479
+      }
+    },
+    {
+      "origin": 2024,
+      "rows": 1238,
+      "by_generator": {
+        "sub_profile": 738,
+        "both": 12,
+        "triangle": 488
+      }
+    }
+  ]
+}

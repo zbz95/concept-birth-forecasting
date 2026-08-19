@@ -301,3 +301,82 @@ bridge as method versus task, and no such classification can be built from a
 vocabulary judge was audited against. It needs either a corpus-derived,
 per-origin rule or an explicitly-dated external taxonomy, decided before Phase 10
 registration rather than at it.
+
+---
+
+# System B — parent-sets (2026-08-19). Phase 6 complete.
+
+`data/graphs/features/parent_set_features.parquet` — **11,112 rows** over
+2016–2024. Both generators the plan specifies, with separate quotas:
+
+| generator | units | members have met | median joint share |
+|---|---:|---:|---:|
+| frequent sub-profiles of confirmed births | 6,612 | 98% | 0.066 |
+| dense high-pace triangles | 4,388 | 100% | 0.223 |
+| found by both | 112 | 100% | 0.363 |
+
+Causality: only births with crystallization ≤ T−(m−1) are admissible, and a
+birth is used only if **all** of its first 20 papers are dated ≤ T — otherwise
+its profile is partly made of the future. That is conservative by design; it
+drops slow-accumulating births rather than truncating their profiles.
+
+The units read correctly. Highest-support sub-profiles at T=2020:
+`adversarial network + gan`, `pascal voc + voc`, `lstm + recurrent neural
+network`, `grammar + parser`. Fastest triangles at T=2020: `entity + knowledge
+graph + relation`, `bleu + language pair + translation`, `adversarial attack +
+adversarial example + robustness`. The 112 units both generators independently
+found are the most interesting set — parentages that have produced births before
+*and* are currently hot: `adversarial network + gan + generator`, `domain
+adaptation + source domain + target domain`, `question answering + visual
+question + vqa`, `architecture search + nas + neural architecture`.
+
+## A defect in the plan's profile rule, found here and fixed
+
+**This one reaches into Phase 7**, since attachment reads the same profiles.
+
+The plan specifies profiles "ranked by lift — never raw counts (hub flooding)".
+The hub-flooding diagnosis is right, but pure lift has the symmetric failure. At
+`min_total_freq = 9`, a concept appearing **once** among a birth's 20 papers
+scores `(1/20)/(9/269814) = 1499` — and hundreds of rare terms tie at exactly
+that value, so the top-k is an arbitrary draw from the corpus's rarest terms.
+Measured: **90% of top-3 profile terms had df < 20, and the median was 9** — the
+vocabulary floor itself.
+
+`profile_min_count = 3` keeps lift as the *ranking* and adds an eligibility
+floor. Profile length is unaffected (~10 terms, 0% empty). The effect:
+
+| birth | pure lift | with the floor |
+|---|---|---|
+| bert | glue score, dissent, sdnet, 100 million parameter | **elmo, sentence encoder, glue benchmark, natural language inference, leaderboard** |
+| stable diffusion | cultural characteristic, homoglyph, poorly document | **imagen, dall-e, text-to-image generation, text prompt** |
+| capsule network | improved explainability, human fmri | **capsnet, dynamic routing, routing, digit** |
+| nerf | sample ray, light transport effect | **volumetric density, volume rendering, photorealistic novel view** |
+| vit | — | **deit, vit architecture, sample efficiency, convolution neural network** |
+| federated learning | character-level recurrent neural network | **federated averaging, federation, global model, server** |
+
+Recorded as an explicit deviation in `configs/config.yaml` under both
+`parent_sets.profile_min_count` and `attachment.profile_min_count`, with the
+measurement, so it can be reversed.
+
+## One thing this surfaced about the merge map
+
+`pascal + pascal voc + voc` and `computer + computer vision` appear among the
+highest-support sub-profiles. Those are surface-variant families the Phase 3
+merge map did not catch — `voc` is not a Schwartz-Hearst acronym of `pascal voc`
+by the initials test, and `computer`/`computer vision` is a containment pair the
+merge rules do not treat as identity. They are legitimate co-occurrences, so they
+are not wrong as parent-sets, but they occupy unit slots that a genuine
+parentage could hold, and the same fragments will appear in Phase 7 profiles.
+
+## Phase 6 status
+
+| component | state |
+|---|---|
+| System A — CPM regions, lineage | built |
+| Region features (spec items 1–6, 9, 10) | built, 3,303 rows |
+| Pair units (spec item 7) | built, 40,472 rows |
+| System B — parent-sets | built, 11,112 rows |
+| Feature 8 — confirmed-birth persistence | deferred to post-Phase-7 back-fill |
+
+Total unit rows across the three systems: 54,887, against the plan's Phase 8
+expectation of 10³–10⁴ per unit system.

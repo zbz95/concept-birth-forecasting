@@ -183,6 +183,34 @@ regions:
                                       # <= T-(m-1), not <= T, or every row imports a year of
                                       # future evidence (leakage checklist item 4).
 
+# System B — parent-sets. The plan specifies the two generators ("frequent
+# sub-profiles of past confirmed births + dense high-pace triangles") but not
+# their thresholds. These are NEW parameters introduced at implementation and
+# need PI ratification; they are not derived from anything in the plan.
+parent_sets:
+  sizes: [2, 3]                       # small sets, per "candidate small sets"
+  min_support: 3                      # a sub-profile must recur across >= 3 confirmed births
+  max_units_per_origin: 1500          # cap, to keep Phase 8 row counts in the plan's 1e3-1e4
+  triangle_top_n: 500                 # dense high-pace triangles kept per origin, by min-pair pace
+  profile_n_papers: 20                # mirrors attachment.profile_n_papers
+  profile_top_k: 10                   # mirrors attachment.attach_top_k
+  profile_min_count: 3                # DEVIATION FROM THE PLAN AS WRITTEN, with evidence.
+                                      # The plan says profiles are "ranked by lift -- never raw
+                                      # counts (hub flooding)". Pure lift has the symmetric
+                                      # failure: with min_total_freq=9, a concept appearing ONCE
+                                      # in the birth's 20 papers scores (1/20)/(9/269814) = 1499,
+                                      # and hundreds of rare terms tie at exactly that value, so
+                                      # the top-k is an arbitrary draw from the rarest terms.
+                                      # 90% of top-3 profile terms had df < 20; the median was 9,
+                                      # the floor itself. Requiring the concept in >= 3 of the
+                                      # birth's papers keeps lift as the RANKING and adds an
+                                      # eligibility condition. Effect: bert goes from
+                                      # "glue score, dissent, sdnet" to "elmo, sentence encoder,
+                                      # glue benchmark, natural language inference"; capsule
+                                      # network to "capsnet, dynamic routing, routing, digit";
+                                      # stable diffusion to "imagen, dall-e, text-to-image".
+                                      # Profile length is unchanged (~10, 0% empty).
+
 embedder:
   # Per-origin, from scratch, CPU. No pretrained encoders anywhere, ever.
   algo: "word2vec"                    # or fasttext
@@ -198,6 +226,9 @@ embedder:
 # --------------------------------------------------------------------------
 attachment:
   profile_n_papers: 20                # first N chronological papers
+  profile_min_count: 3                # see parent_sets.profile_min_count -- the same
+                                      # eligibility floor applies to Phase 7 attachment,
+                                      # which reads the same profiles
   profile_rank_by: "lift"             # NEVER raw counts (hub flooding)
   attach_top_k: 10
   attach_min_overlap: 3               # arm 1
