@@ -42,8 +42,7 @@ src/
   models/              attachment, localisation, evaluation
 reports/               per-phase reports and figures
 logs/                  append-only audit trail: kills, merges, flags, decisions
-judge/                 the LLM-judge kit: prompt, batches, verdicts, hindsight audit
-data/registry/         the birth registry (the durable artifact)
+judge/                 the LLM-judge method: prompt, protocol, hindsight audit
 ```
 
 **No data is shipped.** Everything under `data/` and the LLM-judge payload under
@@ -109,8 +108,7 @@ every stage indexed by origin *T* asserts at build time that no input postdates
 are recorded in `logs/flags.jsonl` rather than reconstructed after the fact.
 
 Findings that did not work are kept, not deleted: the discarded unit-rate model
-and its report are in `reports/phase8_models.md` and
-`data/models/archive_rate_model/`.
+and its report are in `reports/phase8_models.md`.
 
 ## Status
 
