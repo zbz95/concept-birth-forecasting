@@ -1,0 +1,17 @@
+K=20, hub 95th, validation.  random=0.1337  magnitude=0.3489 (2.61x)
+
+=== adding the ORTHOGONAL residual of effective size ===
+  magnitude + 0.00 x resid(effective size)   recall 0.3489  lift 2.61x   <-- best
+  magnitude + 0.10 x resid(effective size)   recall 0.3479  lift 2.60x
+  magnitude + 0.20 x resid(effective size)   recall 0.3484  lift 2.61x
+  magnitude + 0.30 x resid(effective size)   recall 0.3484  lift 2.61x
+  magnitude + 0.50 x resid(effective size)   recall 0.3483  lift 2.61x
+  magnitude + 0.75 x resid(effective size)   recall 0.3484  lift 2.61x
+  magnitude + 1.00 x resid(effective size)   recall 0.3482  lift 2.60x
+  magnitude + 1.50 x resid(effective size)   recall 0.3464  lift 2.59x
+
+  best weight 0.00: 0.3489 vs magnitude-only 0.3489 = +0.0% relative
+
+=== also try the raw (non-residualized) z_eff for comparison ===
+  magnitude + 0.25 x z(effective size)      recall 0.3484
+  magnitude + 0.50 x z(effective size)      recall 0.3489

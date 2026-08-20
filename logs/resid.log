@@ -1,0 +1,14 @@
+K=20, hub 95th, validation.  random = 0.1337
+
+=== THE DECISIVE TEST: brokerage with magnitude REGRESSED OUT ===
+   if residual brokerage still beats random, it carries independent signal
+
+  z(-burt), raw                          recall 0.3190   lift 2.39x
+  z(-burt), magnitude removed            recall 0.1145   lift 0.86x
+  z(effective size), raw                 recall 0.3383   lift 2.53x
+  z(effective size), magnitude removed   recall 0.2145   lift 1.60x
+  magnitude alone                        recall 0.3489   lift 2.61x
+
+=== variance of brokerage explained by magnitude ===
+  z_negburt      R^2 on (z_nT, z_deg) = 0.453   -> 55% of it is independent
+  z_eff          R^2 on (z_nT, z_deg) = 0.751   -> 25% of it is independent

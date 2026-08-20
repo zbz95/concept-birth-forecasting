@@ -1,0 +1,16 @@
+T=2020: 137 regions, 91,453 binarized edges
+
+A. constraint on REGION SUBGRAPH
+   nodes with NaN/undefined constraint (degree 0 in region): 0/2,357 (0%)
+   ^ I replaced those with 1.0 (max constraint), which forces them last when inverted
+   constraint range 0.031-0.926, median 0.133
+
+B. constraint on FULL graph (14,573 nodes, 91,453 edges)
+   NaN: 0/14,573
+   constraint range 0.007-1.125, median 0.256
+
+   correlation between subgraph-constraint and full-graph-constraint: +0.114
+   (2,357 nodes compared)
+
+   -> if this correlation is low, the subgraph version was measuring
+      brokerage INSIDE a region, not brokerage BETWEEN regions.

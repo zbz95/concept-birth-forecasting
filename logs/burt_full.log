@@ -1,0 +1,30 @@
+  T=2016: full-graph constraint over 3,196 nodes
+  T=2017: full-graph constraint over 4,978 nodes
+  T=2018: full-graph constraint over 7,611 nodes
+  T=2019: full-graph constraint over 10,728 nodes
+  T=2020: full-graph constraint over 14,573 nodes
+  T=2021: full-graph constraint over 17,893 nodes
+  T=2022: full-graph constraint over 20,942 nodes
+  T=2023: full-graph constraint over 24,567 nodes
+
+K=20, hub 95th, validation.  random=0.1337
+
+=== CORRECTED: brokerage on the FULL graph ===
+  -burt (FULL graph)                 recall 0.3190  lift 2.39x
+  effective size (FULL graph)        recall 0.3383  lift 2.53x
+  magnitude z(nT)+z(deg)             recall 0.3489  lift 2.61x
+
+=== correlation of FULL-graph brokerage with magnitude (within region) ===
+  z(-burt_full) vs z(deg)  +0.635
+  z(-burt_full) vs z(n_T)  +0.530
+
+=== does it add on top of magnitude now? ===
+  magnitude + 0.00 x brokerage_full   recall 0.3489  lift 2.61x
+  magnitude + 0.25 x brokerage_full   recall 0.3503  lift 2.62x
+  magnitude + 0.50 x brokerage_full   recall 0.3496  lift 2.62x
+  magnitude + 1.00 x brokerage_full   recall 0.3498  lift 2.62x
+  magnitude + 2.00 x brokerage_full   recall 0.3496  lift 2.62x
+
+=== STRATIFIED: within nodes of SIMILAR magnitude, does brokerage rank? ===
+  bottom half by magnitude   random 0.1422  brokerage 0.1898 (1.33x)  magnitude 0.2199 (1.55x)
+  top half by magnitude      random 0.1357  brokerage 0.2203 (1.62x)  magnitude 0.2607 (1.92x)

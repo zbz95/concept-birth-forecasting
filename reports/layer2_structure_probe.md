@@ -177,3 +177,49 @@ There is a real scientific statement here, and it is not "structure does not
 matter". It is: **structure matters, and it says the same thing size does.**
 Births land on big, busy, loosely-embedded nodes — and "big", "busy" and
 "loosely-embedded" turn out to be three views of one underlying quantity.
+
+---
+
+# The ceiling — why nothing adds to magnitude
+
+The decisive number, and the answer to "is there anything left to find".
+
+An oracle that already knows where the births landed, greedily picking the best
+possible 20 nodes per region:
+
+| | recall@20 | lift |
+|---|---:|---:|
+| random | 0.1337 | 1.00× |
+| **magnitude** — z(papers) + z(degree) | **0.3489** | **2.61×** |
+| **ORACLE — best possible 20 nodes** | **0.4169** | **3.12×** |
+
+**Magnitude captures 76% of the achievable gain over random.** The entire
+remaining headroom is 0.068 recall — 24% of the gap — and that is what every
+structural feature tested was competing for. None of them took any of it.
+
+This reframes the whole structural investigation. The correct statement is not
+"structure carries no information" — Burt's effective size demonstrably does,
+1.60× on its own after magnitude is regressed out. It is that **the task has a
+hard ceiling at 3.12×, magnitude alone reaches 2.61×, and the residual 24% is
+not reachable by any node-level feature tried here.**
+
+Note what the oracle is and is not: it is an upper bound for *any* method that
+selects 20 nodes from the region's own membership. It is not achievable
+prospectively. So 3.12× is the ceiling of the task as posed, and part of the
+missing 24% is likely births whose parents simply were not in the region at all —
+which the orphan rate (25–48%) and the `capsule network` case already hinted at.
+
+## Independence is not incremental value
+
+Worth recording as a methodological note, since it caused a wrong conclusion
+earlier in this file. Effective size is 25% independent of magnitude by variance,
+and that independent quarter predicts at 1.60× alone — yet adding it back
+contributes **0.0% at every weight from 0.1 to 1.5**, including in orthogonal
+residual form.
+
+Both are true. The residual selects a *different* 20 nodes that also beat random,
+but it recovers largely the *same births*. It does not find births that magnitude
+misses. Two statistically uncorrelated predictors can aim at the same targets.
+
+An earlier line in this report — "structure says the same thing size does" — was
+too glib and is superseded by this.

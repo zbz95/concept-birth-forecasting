@@ -1,0 +1,8 @@
+K=20, hubs cut at 95th pct, validation
+
+  random            recall@20  0.1337
+  magnitude         recall@20  0.3489   (2.61x random)
+  ORACLE (best possible)       0.4169   (3.12x random)
+
+  magnitude captures 76% of the achievable gain over random
+  headroom remaining: 0.0680 recall (24% of the gap)
