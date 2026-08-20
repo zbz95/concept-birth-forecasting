@@ -104,6 +104,13 @@ it, regenerate the term export as described in `judge/README.md`, judge the
 batches, and run `src/extraction/judge_ingest.py` — which also runs the hindsight
 audit that must pass before the verdicts are applied.
 
+## Contributing / picking this up
+
+[`CLAUDE.md`](CLAUDE.md) documents the causality rule the pipeline enforces, the
+manifest and append-only-log conventions, pipeline order, the evaluation
+partitions, and a list of the non-obvious failure modes encountered during
+construction. Read it before changing anything under `src/`.
+
 ## How this was built
 
 Every artifact carries a manifest (config hash, code commit, input hashes), and
