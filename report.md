@@ -4,6 +4,39 @@
 
 ---
 
+## Abstract
+
+We investigate whether the location at which a new scientific concept will appear
+is predictable in advance of that concept existing. From 269,814 arXiv abstracts
+in computational linguistics and computer vision (1994–2025) we construct a
+concept co-occurrence graph and a registry of 100,295 dated concept births, in
+which every artifact indexed by year *T* is reconstructed using only data dated at
+or before *T*, so that vocabulary, concept identity, embeddings and region
+membership cannot encode the outcome. Overlapping regions are induced by clique
+percolation, and localisation is posed as a ranking problem: at origin *T*, rank a
+region's members by their estimated propensity to be a parent of a concept
+subsequently born there, select the top *K*, and evaluate the selection against
+the parents actually observed. On held-out years (2022–2023) the selected model
+attains recall@10 of 0.250 at a one-year horizon and 0.321 at two years, against
+random baselines of 0.144 and 0.152, with bootstrap confidence intervals excluding
+unity. Discriminative power increases with region size, reaching 4.78 times chance
+for regions exceeding 300 members. The mechanism is narrower than anticipated:
+offered four nested feature families, a selection procedure evaluated solely on
+validation data chose the least expressive, and across approximately forty
+structural features those measuring magnitude attain lifts of 2.1–2.6× while those
+measuring topological shape or temporal dynamics attain 1.0–1.2×. Burt's
+structural-holes hypothesis is supported in isolation, effective size attaining
+1.60× after magnitude is partialled out, yet contributes no measurable improvement
+in combination. An oracle with complete hindsight attains only 3.12×, of which
+magnitude alone captures 76%, indicating a low predictability ceiling that a
+single trivial quantity nearly saturates. The contributions are the
+causally-constructed birth registry, released with a datasheet documenting a
+measured revision-contamination bias affecting 19.1% of the corpus, and a
+characterised ceiling that bounds what structural approaches to this problem can
+achieve.
+
+---
+
 ## 1. Introduction
 
 New scientific concepts do not enter a field uniformly. They arise adjacent to
