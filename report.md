@@ -1,4 +1,4 @@
-# Where Do New Concepts Appear? Localising Concept Births in a Causally-Constructed Co-occurrence Graph of NLP and Computer Vision
+# Localising Concept Births in a Causally-Constructed Co-occurrence Graph of NLP and Computer Vision
 
 **Bakhyt Zharkynbay** · August 2026
 
@@ -6,444 +6,509 @@
 
 ## 1. Introduction
 
-New scientific concepts do not appear uniformly. They appear somewhere — near
-particular existing ideas, in particular corners of a field. This project asks
-whether that "somewhere" is predictable in advance, and if so, what predicts it.
+New scientific concepts do not enter a field uniformly. They arise adjacent to
+particular existing concepts, in particular regions of the intellectual landscape.
+This work asks whether that adjacency is predictable in advance of the concept
+existing, and if so, which properties of the surrounding structure carry the
+predictive signal.
 
-We build a concept co-occurrence graph from 269,814 arXiv abstracts in
-computational linguistics and computer vision (1994–2025), partition it into
-overlapping regions, and pose a concrete forecasting task: **given a region of
-roughly a hundred concepts at time T, name ten of them and claim the next concept
-born in that region will be related to those ten.** Then wait, observe the birth,
-and check.
+We construct a concept co-occurrence graph from 269,814 arXiv abstracts in
+computational linguistics and computer vision (1994–2025), induce overlapping
+regions over it, and formulate concept-birth localisation as a ranking problem:
+at origin year *T*, rank the members of a region by their estimated propensity to
+be a parent of a concept born in that region during a subsequent horizon, and
+evaluate the ranking against the parents actually observed.
 
-The answer is yes, with a specific shape. On held-out test years the method
-reaches recall@10 of 0.250 at horizon 1 and 0.321 at horizon 2, against random
-baselines of 0.144 and 0.152 — lifts of 1.73× and 2.10×, with bootstrap intervals
-excluding 1.0. Lift rises sharply with difficulty: naming ten nodes out of a
-600-concept region beats chance by 4.78×.
+The task is predictable well above chance. On held-out years the selected model
+attains recall@10 of 0.250 at horizon 1 and 0.321 at horizon 2, against random
+baselines of 0.144 and 0.152 (lifts of 1.73× and 2.10×, bootstrap intervals
+excluding unity). Discriminative power increases with region size, reaching 4.78×
+for regions exceeding 300 members.
 
-The mechanism, however, is disappointing in an interesting way. Given a free
-choice among four families of features — a node's own activity, graph topology,
-collaboration structure, and semantic embedding — a selection procedure judged
-only on validation data chose the *simplest*. Roughly forty structural features
-were then tested individually. Everything that measures **magnitude** (degree,
-paper count, new-neighbour count) predicts at 2.1–2.6× random; everything that
-measures **shape or dynamics** (clustering, edge recency, turnover) predicts at
-1.0–1.2×. An oracle with full hindsight, selecting the best possible ten nodes,
-reaches only 3.12× — and plain magnitude already captures **76% of that
-achievable gain**.
+The mechanism, however, is narrower than the design anticipated. A model-selection
+procedure with access to four nested feature families — a node's own activity
+series, graph topology, collaboration structure, and semantic embedding — selected
+the least expressive family. Approximately forty structural features were then
+evaluated individually: those measuring *magnitude* attain lifts of 2.1–2.6×,
+while those measuring *shape* or *temporal dynamics* attain 1.0–1.2×. An oracle
+with complete hindsight reaches 3.12×, of which magnitude alone captures 76%.
 
-The contribution is therefore threefold: a causally-constructed birth registry of
-100,295 dated concepts released as a resource; a demonstration that concept-birth
-localisation is predictable well above chance; and a well-characterised
-predictability ceiling showing that a single trivial quantity nearly saturates the
-task.
+The contributions are: (i) a causally-constructed registry of 100,295 dated
+concept births, released with a datasheet documenting its known biases; (ii)
+evidence that birth localisation is predictable above chance at multiple selection
+sizes; and (iii) a characterised predictability ceiling, under which a single
+trivial quantity nearly saturates the achievable performance.
 
 ---
 
 ## 2. Literature review
 
-Five strands of prior work bear on this problem. We take each in turn and state
-explicitly what it changed in our design — because in several cases the prior
-work's known weaknesses are precisely what our methodology was built to avoid.
+Five bodies of work bear on this problem. Each is discussed together with the
+specific design consequence it had, since in several cases the known limitations
+of prior approaches directly motivated our methodological choices.
 
 ### 2.1 Forecasting the emergence of research topics
 
 The closest antecedent is the work of Salatino, Osborne and Motta. Salatino and
-Motta (2016) observed that new research topics are preceded by detectable
-activity in the network of *existing* topics, and Salatino et al. (2017)
-established the central empirical claim: new areas emerge where previously
-distinct areas begin to collaborate, and this increase in collaboration is
-detectable *before* the new topic is named. AUGUR (Salatino et al., 2018)
-operationalised this as a forecasting system, detecting "topic clusters" whose
-collaboration pace rises and predicting emergence within them.
+Motta (2016) observed that new research topics are preceded by detectable activity
+in the network of existing topics. Salatino et al. (2017) established the central
+empirical claim: new areas emerge where previously distinct areas begin to
+collaborate, and this increase is detectable before the new topic is named. AUGUR
+(Salatino et al., 2018) operationalised this as a forecasting system over clusters
+of existing topics.
 
-Three properties of that line of work shaped our design by contrast.
+Three properties of that line of work shaped the present design by contrast.
 
-**It forecasts at the level of a topic label.** AUGUR works over an existing
-curated topic taxonomy (the Computer Science Ontology), where the units are
-pre-named. Our units are induced bottom-up from the corpus, and our task descends
-one level of granularity further: not "will a topic emerge in this cluster" but
-"*which specific concepts* will the newborn be attached to". This is the
-granularity-descent that motivates our Layer-2 framing.
+First, forecasting is performed at the granularity of a topic label, over a
+curated taxonomy (the Computer Science Ontology) in which units are pre-named. The
+present work induces units bottom-up from the corpus and descends one level of
+granularity: the prediction target is not whether a topic will emerge within a
+cluster, but which specific concepts a newborn will be attached to.
 
-**Its evaluation is retrospective against a taxonomy that already contains the
-answer.** If a topic ontology is built in 2020 and used to evaluate whether 2015
-signals predicted 2018 topics, the ontology's very structure encodes what became
-important. We treat this as the central methodological hazard, and it is the
-reason our pipeline enforces a causality gate at build time on *every* artifact —
-vocabulary, merge decisions, embeddings, and region membership are each rebuilt
-from scratch at each origin year using only data dated `<= T`.
+Second, evaluation is retrospective against a taxonomy constructed after the
+period being evaluated. A topic ontology built in 2020 and used to assess whether
+2015 signals predicted 2018 emergence encodes, in its own structure, which topics
+proved important. We treat this as the principal methodological hazard. Every
+artifact in the present pipeline — vocabulary, merge decisions, embeddings, region
+membership — is reconstructed at each origin year from data dated at or before
+that year, and each stage asserts this at build time rather than by convention.
 
-**Its positive result is about collaboration pace.** This is a substantive,
-testable claim, and we test it directly: pace-of-collaboration over member pairs
-is one of our feature families. Our finding is that it does not survive
-competition with magnitude, which we report as a disagreement rather than a
-confirmation.
+Third, the reported mechanism is collaboration pace. This is directly testable,
+and we test it: pace of collaboration over region member pairs constitutes one of
+our feature families. Our result does not confirm it, which we report in §4.3.
 
-### 2.2 Recombinant innovation and combination at boundaries
+### 2.2 Recombinant innovation
 
-The theoretical case that novelty arises from recombination is long-established.
-Weitzman (1998) modelled knowledge growth as the recombination of existing ideas;
-Fleming (2001) studied recombinant search empirically in technology; Youn et al.
-(2015) showed that invention in the US patent record is overwhelmingly
-combinatorial. In science specifically, Uzzi et al. (2013) found that the highest
-impact papers pair conventional combinations with an unusual one, and Foster et
-al. (2015) showed that scientists' strategies trade off tradition against
-innovation in a way visible in the structure of what they connect.
+The proposition that novelty arises from recombination is well established.
+Weitzman (1998) modelled knowledge growth as recombination of existing ideas;
+Fleming (2001) studied recombinant search in technology; Youn et al. (2015)
+demonstrated that invention in the US patent record is predominantly
+combinatorial. In science specifically, Uzzi et al. (2013) found that
+high-impact papers combine largely conventional pairings with an atypical one, and
+Foster et al. (2015) characterised research strategies as a tradeoff between
+tradition and innovation observable in what scientists connect.
 
-**What this changed.** It is the reason our unit system is not merely a partition.
-We use clique percolation precisely because it yields *overlapping* regions, and
-we construct explicit region-*pair* units with bridge features, so that
-"intersection births" are expressible as a forecastable quantity rather than
-described anecdotally. We also pre-registered a decision gate: if the observed
-rate of births attaching to two regions simultaneously fell below a threshold,
-the pair-unit arm would be abandoned before any hypothesis about it was
-registered — so that its failure, if it came, would be attributable to nature
-rather than to insufficient data. It passed at 417 dual-attached births per
-origin against a floor of 10.
+**Design consequence.** The unit system is a covering rather than a partition. We
+adopt clique percolation specifically because it yields overlapping regions, and
+construct explicit region-pair units with bridge features, so that births
+occurring at the intersection of two regions are expressible as a forecastable
+quantity. A decision gate was specified in advance: if the observed rate of births
+attaching to two regions simultaneously fell below a stated threshold, the
+pair-unit arm would be abandoned before any hypothesis concerning it was
+registered, so that a null result would be attributable to the phenomenon rather
+than to insufficient statistical power. The gate was satisfied (417 dual-attached
+births per origin against a floor of 10).
 
-### 2.3 Community detection with overlap
+### 2.3 Overlapping community detection
 
 Palla et al. (2005) introduced clique percolation, in which *k*-cliques sharing
-*k*−1 nodes are merged into communities, producing a covering rather than a
-partition. This is the property we need: a concept like `attention` belongs to
-several research areas at once, and a method that forces it into one would make
-intersection births undetectable by construction.
+*k*−1 nodes are merged into communities, producing a covering of the node set.
+This property is necessary here: a concept such as `attention` participates in
+several research areas simultaneously, and a method assigning it to exactly one
+would render intersection births undetectable by construction.
 
-**What this changed, and what it cost.** We adopted clique percolation as the
-primary region backend and verified the overlap property empirically (`attention`
-is a dual citizen from 2016 onward). But we also encountered its known
-degeneracy: on a graph with a dense core, percolation returns one giant component.
-On our 2014 graph — 1,571 nodes — it produced 2,403,400 maximal cliques and no
-usable region structure. Diagnosing this led directly to the edge filter described
-next, and to a degeneracy guard that raises the binarisation threshold whenever a
-component exceeds 20% of the graph.
+**Design consequence, and its cost.** Clique percolation was adopted as the
+primary region backend, and the overlap property was verified empirically
+(`attention` appears in multiple regions from 2016 onward). The method's known
+degeneracy on graphs with dense cores was, however, encountered directly: on the
+2014 graph (1,571 nodes) percolation produced 2,403,400 maximal cliques and no
+usable region structure. Diagnosing this motivated the edge filter described in
+§2.4, together with a degeneracy guard that raises the binarisation threshold
+whenever any component exceeds 20% of the graph.
 
-### 2.4 Network backbone extraction
+### 2.4 Backbone extraction from weighted networks
 
-The dense-core problem is well understood in network science. Serrano et al.
-(2009) showed that thresholding a weighted network by raw edge weight destroys
-its multiscale structure, and proposed a disparity filter retaining edges that are
+The dense-core problem is well characterised in network science. Serrano et al.
+(2009) showed that thresholding a weighted network by absolute edge weight
+destroys its multiscale structure, and proposed a disparity filter retaining edges
 statistically significant relative to each endpoint's strength.
 
-**What this changed.** Our first binarisation rule — an absolute weight threshold
-— produced a 230-node graph where the design expected 15,000–40,000, because
-generic head nouns act as hubs (`image` was adjacent to 56% of the 2014 graph).
-Following Serrano et al.'s logic, we replaced it with a significance-relative-to-
-size criterion: an edge survives only if the co-occurrence exceeds what the two
-endpoints' independent activity predicts. This cut maximal cliques from 2,403,400
-to 1,026 while retaining 98% of nodes, and made clique percolation tractable at
-every origin. The same idiom appears again in our attachment rule (§3), where a
-hypergeometric tail replaces a size-blind overlap ratio.
+**Design consequence.** An absolute-weight binarisation rule produced a 230-node
+graph where the design anticipated 15,000–40,000, because generic head nouns act
+as hubs (`image` was adjacent to 56% of the 2014 graph). Following the logic of
+Serrano et al., this was replaced by a significance-relative-to-size criterion: an
+edge is retained only where the observed co-occurrence exceeds that predicted by
+the two endpoints' independent activity. This reduced the maximal-clique count
+from 2,403,400 to 1,026 while retaining 98% of nodes, rendering clique percolation
+tractable at every origin. The same principle recurs in the attachment rule (§3),
+where a hypergeometric tail probability replaces a size-blind overlap ratio.
 
 ### 2.5 Terminology extraction and concept identity
 
-Our vocabulary is induced from text, not supplied. We draw on three standard
-components: RAKE (Rose et al., 2010) for candidate generation by stopword
+The vocabulary is induced from text rather than supplied. Three standard
+components are used: RAKE (Rose et al., 2010) for candidate generation by stopword
 delimitation; the C-value measure (Frantzi et al., 2000) for termhood, which
-discounts a candidate's frequency by that of the longer terms containing it; and
-the Schwartz–Hearst algorithm (Schwartz & Hearst, 2003) for identifying
-abbreviation–expansion pairs.
+discounts a candidate's frequency by that of longer terms containing it; and the
+Schwartz–Hearst algorithm (Schwartz & Hearst, 2003) for abbreviation–expansion
+identification.
 
-**What this changed.** The C-value insight — that a term appearing only inside
-longer terms is not a term — is directly responsible for our floor being set at
-zero rather than at a positive threshold: at zero it removes exactly the nested
-fragments it was designed to detect (`carlo tree` from *Monte Carlo tree search*)
-and nothing else. Higher floors behave as a second frequency threshold and delete
-newly-born concepts, which for a birth-forecasting project is self-defeating.
+**Design consequence.** The C-value insight — that a term occurring only within
+longer terms is not itself a term — determines our termhood floor. Set at zero, it
+removes exactly the nested fragments it was designed to detect (`carlo tree`, from
+*Monte Carlo tree search*) and nothing further. Positive floors behave as a second
+frequency threshold and preferentially remove recently coined concepts, which is
+self-defeating for a birth-forecasting study.
 
-The Schwartz–Hearst component required a modification we consider a genuine
-improvement. Applied naively, acronym expansion merged unrelated concepts
-transitively: `SR` attests to speech recognition, super-resolution, success rate
-and surface reconstruction, and union-find chained all four into one 33-member
-cluster. We therefore require an acronym to be *unambiguous in this corpus* — one
-expansion accounting for ≥70% of attestations, measured on normalised long forms
-— and route ambiguous acronyms (`bnn`: binary vs. Bayesian neural network) to a
-review queue instead of merging them.
+The Schwartz–Hearst component required modification. Applied without
+disambiguation, acronym expansion merged unrelated concepts transitively: `SR`
+attests to speech recognition, super-resolution, success rate and surface
+reconstruction, and union-find chained all four into a single 33-member cluster.
+We therefore require an acronym to be unambiguous within the corpus — one
+expansion accounting for at least 70% of attestations, measured over normalised
+long forms — and route ambiguous acronyms (`bnn`: binary versus Bayesian neural
+network) to a review queue rather than merging them.
 
-Crucially, every merge carries an **evidence date** and is inactive before it. A
-present-day judgement that two surface forms denote the same concept must not
-retroactively alter a 2016 count series. This principle also governs our use of
-embeddings (Mikolov et al., 2013): a per-origin word2vec model is trained from
-scratch on abstracts dated `<= T`, and no pretrained encoder is used anywhere,
-since a pretrained model has read the future of every origin.
+Every merge carries an evidence date and is inactive prior to it, so that a
+present-day judgement of concept identity cannot retroactively alter an earlier
+count series. The same principle governs the use of embeddings (Mikolov et al.,
+2013): a word2vec model is trained from scratch at each origin on abstracts dated
+at or before that origin, and no pretrained encoder is used, since a pretrained
+model has been exposed to the future of every origin.
 
-### 2.6 Link prediction as the task frame
+### 2.6 Link prediction
 
-Liben-Nowell and Kleinberg (2003, 2007) framed link prediction as ranking
-candidate node pairs by structural proximity, and established the baseline
-convention that a proposed method must be compared against simple structural
-predictors — degree, common neighbours, Adamic–Adar — rather than against chance.
+Liben-Nowell and Kleinberg (2003, 2007) framed link prediction as the ranking of
+candidate node pairs by structural proximity, and established the evaluation
+convention that a proposed method be compared against simple structural
+predictors — degree, common neighbours, Adamic–Adar — rather than against chance
+alone.
 
-**What this changed.** Our evaluation is built on this convention, and stricter
-than it. We compare not against degree-*weighted random sampling* but against
-deterministic top-degree selection, which is harder to beat. This turned out to
-matter: degree alone reaches 0.196 recall@10 on test against random's 0.144, so
-most of the achievable lift is available from a trivial structural baseline, and
-any claim for a model must clear that rather than chance.
+**Design consequence.** Our evaluation adopts this convention in a stricter form.
+Rather than degree-*weighted random sampling*, we use deterministic selection of
+the highest-degree nodes, which is a harder baseline. This proved material: degree
+alone attains recall@10 of 0.196 on the test set against random's 0.144, so a
+substantial fraction of achievable performance is available from a trivial
+structural predictor, and any claim on behalf of a fitted model must be assessed
+against that rather than against chance.
 
 ### 2.7 Structural holes
 
 Burt (1992, 2004) argued that actors spanning structural holes — connected to
-otherwise-disconnected groups — have an advantage in generating good ideas,
-because they see combinations others cannot.
+otherwise unconnected groups — hold an advantage in generating novel ideas, having
+access to combinations unavailable to others.
 
-**What this changed.** This is the most directly testable structural hypothesis
-available for our problem, and we tested it explicitly: Burt's constraint and
-effective size, computed on the full graph, alongside inverted clustering and
-neighbour-degree measures. The hypothesis is **supported in isolation** — births
-land disproportionately on low-constraint, low-clustering nodes, and effective
-size predicts at 1.60× random even after magnitude is regressed out. It is
-nonetheless **redundant in combination**, adding 0.0% to a magnitude baseline at
-every weight tested. We regard this as the most informative negative result in the
-project and report it in §4.3.
+**Design consequence.** This is the most directly testable structural hypothesis
+available for the present problem, and it was tested explicitly through Burt's
+constraint and effective size computed on the full graph, together with inverted
+clustering and neighbour-degree measures. The hypothesis is supported in
+isolation: births occur disproportionately at low-constraint, low-clustering
+nodes, and effective size attains a lift of 1.60× after magnitude is partialled
+out. It is nonetheless redundant in combination, contributing no measurable
+improvement over a magnitude baseline at any weighting tested (§4.4).
 
 ---
 
 ## 3. Methodology
 
-Ten stages, each producing a versioned artifact carrying a manifest of its config
-hash, code commit, and input hashes. Every stage indexed by an origin year `T`
-asserts at build time that no input postdates `T`.
+### 3.1 Problem formulation
 
-**Corpus.** arXiv metadata, papers with a primary or cross-listed category in
-{cs.CL, cs.CV}, dated by first-version submission, cutoff 2025-12-31. 269,814
-papers of 3,134,984 scanned.
+Let *G<sub>T</sub>* = (*V<sub>T</sub>*, *E<sub>T</sub>*) denote the concept
+co-occurrence graph at origin year *T*, and let *R* ⊆ *V<sub>T</sub>* denote a
+region. For a concept *b* born in the interval (*T*, *T*+*h*] and attached to *R*,
+let *P*(*b*) denote its profile — the concepts co-occurring in its earliest papers
+— and define its observed parentage within *R* as *P*(*b*) ∩ *R*.
 
-**Vocabulary.** LaTeX is stripped, then three extractors nominate candidates:
-RAKE, POS-pattern noun chunks `ADJ*(NOUN|PROPN)+` with suffixes, and raw
-2–3-grams. Nomination is separated from counting — once a candidate exists, every
-abstract is re-scanned by lemmatised token match — so crystallisation dates do
-not inherit extractor recall variance. This yields a permanent coinage ledger of
-20,946,277 candidates over 105,865,154 postings, never filtered. The *modelling
-vocabulary* is a view over it, rebuilt from scratch at each origin: frequency
-(`df_T >= 9`), pattern kills, C-value termhood, and merges with evidence date
-`<= T`.
+Given a scoring function *s*: *V<sub>T</sub>* → ℝ computed exclusively from data
+dated at or before *T*, let *S<sub>K</sub>*(*R*; *s*) denote the *K* highest-scoring
+members of *R*. Performance is measured by
 
-**Registry.** A concept *crystallises* in the first year `t` with `>= 5` papers in
-each of years `t..t+1`, whose papers fall into `>= 2` disjoint author-group
-components. Computed from data `<= t+1` only, so the registry is complete through
-2024. 100,295 concepts: 32,312 persisted, 3,130 crystallised then declined,
-47,353 coinage-only, 17,500 censored.
+&nbsp;&nbsp;&nbsp;&nbsp;recall@*K* = |*P*(*b*) ∩ *R* ∩ *S<sub>K</sub>*| / |*P*(*b*) ∩ *R*|,
 
-**Graphs.** The primary object is an event store of `(paper, term, date)` triples,
-never capped or reweighted; graphs are disposable views. `graph_T` projects a
-trailing three-year window onto concept–concept edges under fractional weighting
-— each paper spends exactly 1.0 of edge mass over its pairs — giving an asserted
-invariant that total edge mass equals the number of papers with `>= 2` concepts.
-Two filters apply at the projection layer only: pairs where one concept is a
-contiguous sub-phrase of the other form no edge, and an edge survives
-binarisation only if `>= 5` papers name both concepts **and** the co-occurrence
-exceeds chance given both endpoints' activity (§2.4).
+averaged over births and weighted by births per region, together with hit rate
+(the proportion of births with at least one parent in *S<sub>K</sub>*) and mean
+rank of the observed parents.
 
-**Regions.** Clique percolation at `k ∈ {3,4,5}` over maximal cliques, with a
-degeneracy guard raising the threshold whenever one component exceeds 20% of the
-graph. Regions overlap. Lineage across origins is matched by best Jaccard
-`>= 0.30`; measured stability at `k=4` is 46.9%.
+*K* is a free parameter of the evaluation, not a property of the method. It is
+swept over {1, 2, 3, 5, 10, 20, 50} on the validation partition (§4.2); results
+are reported at multiple values, and the value fixed in advance for the held-out
+test scoring is stated where relevant.
 
-**Attachment.** A birth's *profile* is the concepts co-occurring in its first 20
-papers, ranked by lift and restricted to those appearing in at least 3 of them. A
-birth attaches to a region when their overlap is `>= 3` **or** the hypergeometric
-tail `P(X >= o | |P|, |R|, |vocab_T|) <= 10⁻³`. Multi-attachment is permitted; the
-birth's unit target mass splits equally.
+### 3.2 Pipeline
 
-**Evaluation.** Train 2016–2018, validate 2019–2021, test 2022–2023. All model
-selection — 96 configurations across four nested feature families, three values
-of K, and eight hyperparameter settings — is performed on validation. Test is
-scored once.
+Each stage produces a versioned artifact carrying a manifest of its configuration
+hash, code commit, and input hashes. Each stage indexed by *T* asserts at build
+time that no input postdates *T*.
+
+**Corpus.** arXiv metadata; papers with a primary or cross-listed category in
+{cs.CL, cs.CV}, dated by first-version submission, with cutoff 2025-12-31. 269,814
+papers retained from 3,134,984 scanned.
+
+**Vocabulary.** LaTeX is removed, after which three extractors nominate
+candidates: RAKE, part-of-speech noun chunks matching `ADJ*(NOUN|PROPN)+` together
+with their suffixes, and raw 2–3-grams. Nomination is separated from counting:
+once a candidate exists, all abstracts are rescanned by lemmatised token match, so
+that crystallisation dates do not inherit extractor recall variance. This yields a
+coinage ledger of 20,946,277 candidates over 105,865,154 postings, which is never
+filtered. The modelling vocabulary is a view over this ledger, reconstructed at
+each origin under frequency, pattern, termhood and merge-activation criteria.
+
+**Registry.** A concept crystallises in the first year *t* at which it attains at
+least five papers in each of years *t* and *t*+1, those papers falling into at
+least two disjoint author-group components. This is computed from data dated at or
+before *t*+1, so the registry is complete through 2024. It contains 100,295
+concepts: 32,312 persisted, 3,130 crystallised and subsequently declined, 47,353
+coinage-only, and 17,500 censored.
+
+**Graphs.** The primary object is an event store of (paper, term, date) triples,
+never capped or reweighted; graphs are derived views. *G<sub>T</sub>* projects a
+trailing three-year window onto concept pairs under fractional weighting, each
+paper distributing unit edge mass across its pairs, yielding an asserted invariant
+that total edge mass equals the number of papers containing at least two concepts.
+Two filters apply at the projection layer only: pairs in which one concept is a
+contiguous sub-phrase of the other generate no edge, and an edge survives
+binarisation only where at least five papers name both concepts and the
+co-occurrence exceeds chance expectation given both endpoints' activity (§2.4).
+
+**Regions.** Clique percolation at *k* ∈ {3,4,5} over maximal cliques, with the
+degeneracy guard described in §2.3. Lineage across origins is established by best
+Jaccard overlap ≥ 0.30; measured stability at *k*=4 is 46.9%.
+
+**Attachment.** A birth's profile comprises the concepts co-occurring in its first
+twenty papers, ranked by lift and restricted to those appearing in at least three.
+A birth attaches to a region where the overlap is at least three, or where the
+hypergeometric tail probability *P*(*X* ≥ *o* | |*P*|, |*R*|, |*V<sub>T</sub>*|)
+does not exceed 10⁻³. Multiple attachment is permitted, with unit target mass
+divided equally.
+
+**Evaluation partitions.** Training 2016–2018, validation 2019–2021, test
+2022–2023. All model selection — 96 configurations spanning four nested feature
+families and eight hyperparameter settings — is conducted on validation. The test
+partition is scored once.
 
 ---
 
 ## 4. Results
 
-### 4.1 The registry
+### 4.1 Registry
 
-100,295 concepts with dated births. A 20-concept spot check recovers the expected
-dates: NeRF 2020, BERT 2018, GAN 2015, Stable Diffusion 2022, chain-of-thought
-2022, knowledge distillation 2016 — 13 of 18 within one year. `diffusion model`
-shows coinage 2012 and crystallisation 2020, the eight-year naming-to-consolidation
-gap that motivates separating the two dates.
+The registry contains 100,295 concepts with dated births. A twenty-concept
+verification set recovers expected dates in 13 of 18 cases within one year: NeRF
+2020, BERT 2018, GAN 2015, Stable Diffusion 2022, chain-of-thought 2022, knowledge
+distillation 2016. The concept `diffusion model` records coinage in 2012 and
+crystallisation in 2020, exhibiting the naming-to-consolidation interval that
+motivates recording the two dates separately.
 
-Two of the five misses are the expectation being wrong rather than the registry
-(attention mechanisms predate the Transformer). The rest are sense ambiguity: the
-registry's `transformer` is the *spatial* transformer of 2015, and its profile —
-`spatial transformer module, spatial transformer network` — says so.
+Two of the five discrepancies reflect errors in the verification expectations
+rather than the registry, attention mechanisms having preceded the Transformer
+architecture. The remainder arise from sense ambiguity: the registry's
+`transformer` denotes the spatial transformer of 2015, as its profile
+(`spatial transformer module`, `spatial transformer network`) indicates.
 
-An LLM judge applied to all 106,960 concept labels removed 34.0% as
-non-concepts. It was audited for hindsight rather than trusted: concepts that
-crystallised and then *declined* are real concepts that never became famous, and
-a form-blind judge should keep them at the same rate as persisted ones within a
-size stratum. All three adequately-populated strata showed **negative** gaps
-(−0.008, −0.057, −0.146) — the judge kept the *unfamous* group slightly more
-often, the opposite of familiarity bias.
+A large language model was applied as a judge to all 106,960 concept labels,
+removing 34.0% as non-concepts. Rather than assuming compliance with the
+instruction to disregard familiarity, this was audited: concepts that crystallised
+and subsequently declined are genuine concepts that did not become prominent,
+whereas persisting concepts did. A judge operating on linguistic form alone should
+retain both at equal rates within a size stratum. All three adequately populated
+strata exhibited negative differences (−0.008, −0.057, −0.146), indicating that
+the judge retained the non-prominent group marginally more often — the opposite of
+familiarity bias.
 
-### 4.2 Localisation
+### 4.2 Dependence on selection size *K*
 
-Test origins 2022–2023, `k=4`, `K=10`, scored once with the configuration
+*K* is arbitrary with respect to the method, and was swept on validation. Lift
+over random, at *k*=4 and horizon 1, without hub removal:
+
+| *K* | random | degree | papers | papers × log degree | best lift |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 0.057 | 0.094 | 0.089 | 0.091 | 1.65× |
+| 2 | 0.120 | 0.193 | 0.182 | 0.184 | 1.60× |
+| 3 | 0.174 | 0.259 | 0.253 | 0.256 | 1.49× |
+| 5 | 0.143 | 0.232 | 0.227 | 0.233 | 1.62× |
+| 10 | 0.110 | 0.235 | 0.229 | 0.235 | 2.14× |
+| **20** | 0.135 | 0.309 | 0.321 | **0.326** | **2.41×** |
+| 50 | 0.244 | 0.463 | 0.478 | 0.484 | 1.98× |
+
+Lift is maximised at *K*=20 and declines in both directions. It is lower at
+*K* ∈ {1,2,3} than at *K*=10, so restricting the selection does not increase the
+relative value of the ranking; small *K* increases variance without concentrating
+signal. The relative ordering of scoring functions is stable across *K*.
+
+Held-out test scoring was performed at *K*=10, fixed before the sweep was
+conducted. The sweep therefore constitutes a declared but ungraded refinement:
+*K*=20 is indicated on validation evidence, and its confirmation would require a
+further test evaluation not yet expended.
+
+### 4.3 Localisation performance
+
+Test origins 2022–2023 at *k*=4, *K*=10, scored once using the configuration
 selected on validation:
 
-| horizon | random | degree | model | lift | 95% CI | births |
+| horizon | random | degree | selected model | lift | 95% CI | births |
 |---:|---:|---:|---:|---:|---|---:|
-| 1 | 0.144 | 0.196 | **0.250** | 1.73× | [1.46, 2.07] | 9,121 |
-| 2 | 0.152 | 0.213 | **0.321** | 2.10× | [1.48, 2.83] | 8,519 |
+| 1 | 0.144 | 0.196 | 0.250 | 1.73× | [1.46, 2.07] | 9,121 |
+| 2 | 0.152 | 0.213 | 0.321 | 2.10× | [1.48, 2.83] | 8,519 |
 
-At horizon 2, 57.1% of births have at least one true parent among the ten named,
-against 30.2% at random.
+At horizon 2, 57.1% of births have at least one observed parent within the
+selected set, against 30.2% under random selection.
 
-Lift rises with task difficulty, which is the diagnostic shape:
+Performance relative to chance increases with region size:
 
 | region size | random | model | lift |
 |---|---:|---:|---:|
 | 11–50 | 0.497 | 0.688 | 1.38× |
 | 51–100 | 0.176 | 0.378 | 2.15× |
 | 101–300 | 0.050 | 0.131 | 2.59× |
-| >300 | 0.017 | 0.082 | **4.78×** |
+| >300 | 0.017 | 0.082 | 4.78× |
 
-Naming ten of thirty nodes is nearly free; naming ten of six hundred is a
-prediction, and there the method is worth almost five times chance.
+This is the expected pattern: for small regions a fixed selection covers a large
+proportion of the candidate set, so random selection performs well and the
+achievable margin is compressed. The discriminative content of the ranking is
+therefore most evident in large regions.
 
-### 4.3 The mechanism: magnitude, and a ceiling
+### 4.4 Feature families and the predictability ceiling
 
-Given a free choice over four nested feature families and 96 configurations,
-judged only on validation, the selection procedure chose the **simplest** family
-at horizon 1 — a node's own count series, with no topology, people, or semantics.
-The richer families were not rejected by a significance threshold; they were not
-chosen when something had to be.
+Given unconstrained choice over four nested feature families and 96
+configurations, evaluated solely on validation, the selection procedure returned
+the least expressive family at horizon 1 — a node's own count series, excluding
+topology, collaboration and semantic features. The richer families were not
+rejected by a significance criterion; they were not selected under a procedure
+obliged to select something.
 
-Roughly forty structural features were then tested individually:
+Approximately forty structural features were subsequently evaluated individually:
 
-| family | examples | lift |
+| family | representative features | lift |
 |---|---|---:|
-| magnitude | total degree, external degree, papers this year, new-neighbour count, PageRank | **2.1–2.6×** |
-| shape (inverted) | −clustering, −Burt constraint, effective size | 1.9–2.5× |
-| dynamics | edge recency, edge age, turnover, share of new edges | **1.0–1.2×** |
+| magnitude | total degree, external degree, papers in year *T*, count of newly acquired neighbours, PageRank | 2.1–2.6× |
+| shape (inverted) | negated clustering, negated Burt constraint, effective size | 1.9–2.5× |
+| temporal dynamics | edge recency, edge age, edge turnover, proportion of new edges | 1.0–1.2× |
 
-Edge recency is indistinguishable from random. Burt's structural holes are real —
-effective size predicts at 1.60× even after magnitude is regressed out, with only
-25% of its variance independent — **yet it adds nothing**: magnitude alone reaches
-2.61×, and adding brokerage at any weight, including as an orthogonal residual,
-gives 2.61–2.62×.
+Temporal features are indistinguishable from random selection. Burt's structural
+holes are supported: effective size attains a lift of 1.60× after magnitude is
+partialled out, with 25% of its variance independent of magnitude. It nonetheless
+contributes no improvement in combination — a magnitude baseline attains 2.61×,
+and the addition of brokerage at any weighting, including as an orthogonal
+residual, yields 2.61–2.62×.
 
-An oracle with full hindsight, greedily selecting the best possible twenty nodes
-per region, reaches **0.4169 (3.12×)**. Magnitude reaches 0.3489 — **76% of the
-achievable gain over random**. The remaining headroom is 0.068 recall, and no
-feature tested claimed any of it.
+An oracle with complete hindsight, greedily selecting the optimal twenty members
+per region, attains 0.4169 (3.12×). Magnitude attains 0.3489, or 76% of the
+achievable gain over random. The residual headroom is 0.068 in recall, and no
+feature evaluated recovered any portion of it.
 
-This is the substantive result: not that structure is uninformative, but that the
-task has a low ceiling which a single trivial quantity nearly saturates.
+This constitutes the principal substantive finding: not that structural
+information is absent, but that the task admits a low ceiling which a single
+trivial quantity approaches closely.
 
-### 4.4 A methodological note
+### 4.5 Independence and incremental value
 
-Effective size is 25% independent of magnitude by variance and predicts at 1.60×
-alone, yet contributes 0.0% when added. Both facts hold. The residual selects a
-*different* twenty nodes that also beat random, but recovers largely the *same*
-births. **Statistical independence is not incremental predictive value** — two
-uncorrelated predictors can aim at the same targets.
+Effective size is 25% independent of magnitude by variance and attains 1.60× in
+isolation, yet contributes no measurable improvement when combined. Both
+observations hold simultaneously. The residual selects a different set of members
+which also outperforms random selection, but recovers substantially the same
+births. Statistical independence between predictors does not entail incremental
+predictive value, since uncorrelated predictors may nonetheless identify the same
+outcomes.
 
-### 4.5 Negative result: the unit-rate model
+### 4.6 Negative result: unit-rate modelling
 
-The originally-planned model — predicting how many births a region receives — was
-fitted and discarded. Its failure was calibration: the null was well-calibrated on
-test (ratio 1.06) while every challenger under-predicted (0.80 → 0.50), and
-Poisson log-score punishes under-prediction on high-count rows. Summed log-score
-gain over the null was negative at `k=3` and `k=4`, positive at `k=5` — not stable
-across scales.
+The originally specified model — predicting the number of births a region receives
+— was fitted and subsequently discarded. Its failure was one of calibration: the
+null model was well calibrated on test (ratio 1.06) while all challengers
+underpredicted (0.80 declining to 0.50), and Poisson log-score penalises
+underprediction severely on high-count observations. Summed log-score gain over
+the null was negative at *k*=3 and *k*=4 and positive at *k*=5, and therefore not
+stable across scales.
 
-Localisation is the stronger test of the same hypothesis, because a ranking has no
-rate to miscalibrate. The same features got a fair hearing on 15,125 scored births
-rather than 694 unit-years, and still did not separate. Rate-model artifacts and
-their report are retained rather than deleted.
+Localisation constitutes a stronger test of the same hypothesis, since a ranking
+admits no rate to miscalibrate. The same features were evaluated over 15,125
+scored births rather than 694 unit-years, and did not separate. Artifacts and the
+associated report are retained.
 
-### 4.6 Threats to validity
+### 4.7 Threats to validity
 
-**Revision contamination.** The arXiv snapshot stores only current abstracts.
-19.1% of papers carry text finalised in a later year than their v1 date, which
-biases coinage dates *earlier* — the direction that flatters a forecaster. This is
-documented with its measured magnitude in the released datasheet.
+**Revision contamination.** The arXiv snapshot stores only current abstracts;
+19.1% of papers carry text finalised in a later year than their first-version
+date, biasing coinage dates earlier — the direction that favours an apparent
+forecaster. Magnitude and instances are documented in the accompanying datasheet.
 
 **Exploratory status.** Origins 2019–2023 were used by the discarded rate model
-before the three-way split was adopted, so one architecture decision was made with
-knowledge of pooled performance on years later used for testing. The split
-quarantines subsequent iteration but cannot undo this.
+prior to adoption of the three-way partition, so one architectural decision was
+taken with knowledge of pooled performance on years subsequently used for testing.
+The partition constrains subsequent iteration but does not reverse this.
 
 **Interval width.** With two test origins, the reported bootstrap resamples
-regions rather than years, so year-level dependence is not captured and the true
-intervals are wider than stated.
+regions rather than years; year-level dependence is not captured and the reported
+intervals are correspondingly narrow.
 
 ---
 
 ## 5. Future work
 
-### 5.1 Hierarchical graphs
+### 5.1 Hierarchical representations
 
-Every result here is computed on a flat graph at a single granularity, and that
-choice is doing more work than it should. Clique percolation at `k=3` and `k=5`
-required different edge thresholds to avoid degeneracy (42 versus 12 co-occurring
-papers by 2023), so the three scales are not running on comparable objects. A
-region of 586 members and one of 4 are treated as the same kind of unit.
+All results are computed on a flat graph at a single granularity, and that
+granularity carries more of the analytical burden than is desirable. Clique
+percolation at *k*=3 and *k*=5 required different edge thresholds to avoid
+degeneracy (42 versus 12 co-occurring papers by 2023), so the three scales do not
+operate on comparable objects, weakening the intended multi-scale robustness
+comparison. A region of 586 members and one of four members are treated as
+instances of the same unit type.
 
 A hierarchical backbone addresses this directly. Bottom-up subsumption induction —
-X sits above Y when Y's papers overwhelmingly also mention X but not conversely —
-or nested stochastic block models would give every region a depth, with three
-payoffs. **Sharpness control**: a forecast could name the depth at which it is
-confident rather than committing to one granularity globally. **Birth depth as an
-observable**: whether a concept is born as a sibling of existing leaves or as a
-new branch is a structural, causally datable magnitude this project cannot
-currently measure. **Tree-distance scoring**: our metric is set overlap, which
-treats "predicted a sibling" and "predicted something unrelated" identically; a
-hierarchy makes near-misses gradable.
+concept *X* dominating concept *Y* where papers mentioning *Y* overwhelmingly also
+mention *X* but not conversely — or nested stochastic block models would assign
+each region a depth, with three consequences. Forecasts could specify the depth at
+which they are confident rather than committing to a single global granularity.
+Birth depth — whether a concept enters as a sibling of existing leaves or as a new
+branch — becomes a structural and causally datable observable, which the present
+design cannot measure. And evaluation could employ tree distance rather than set
+overlap, which currently treats a predicted sibling and an unrelated prediction
+identically.
 
-The hazard is specific. Taxonomy drift is where hindsight leaks most strongly — a
-present-day model's sense of where a concept sits is contaminated by knowing what
-it became. Any hierarchy must be induced bottom-up, per origin, from `<= T` text
-only, under the same causality gate applied here to the embedder and merge map.
+The associated hazard is specific. Taxonomic drift is precisely where hindsight
+leaks most strongly, since a present-day model's judgement of where a concept
+belongs is informed by what it subsequently became. Any hierarchy must therefore
+be induced bottom-up, per origin, from data at or before that origin, under the
+causality constraint applied here to the embedder and merge map.
 
-### 5.2 Hypergraphs
+### 5.2 Hypergraph representations
 
-The projection from papers to a pairwise graph is lossy in a way that matters
-here. A paper naming five concepts becomes ten edges, and the fact that those five
-appeared *together* — as one act of combination — is unrecoverable afterwards.
-Since the hypothesis under test is that concepts are born where existing concepts
-meet, discarding the arity of the meeting discards evidence about the mechanism.
-This is a direct methodological consequence of the recombination literature
-(§2.2): if invention is combinatorial, the combination is the unit of observation,
-and a pairwise projection cannot represent one.
+The projection from papers to pairwise edges is lossy in a manner directly
+relevant to the hypothesis under test. A paper naming five concepts becomes ten
+edges, and the fact that those five appeared jointly — as a single act of
+combination — is not subsequently recoverable. Given that the recombination
+literature (§2.2) treats the combination as the unit of analysis, a representation
+unable to express combinations of arity greater than two discards evidence about
+the mechanism it is intended to examine.
 
-A hypergraph keeps each paper as a single hyperedge over its concept set. Three
-things become expressible. **Higher-order co-occurrence**: whether three concepts
-have appeared together, as distinct from all three pairs having appeared
-separately — precisely the configuration our parent-set units approximated with
-triangles. **Simplicial closure**: whether an open triple closes into a full
-co-mention before a birth occurs. **Arity-weighted exposure**: our fractional
-weighting spreads a paper's mass over `C(k,2)` pairs, a workaround for a
-representation that cannot hold the paper whole.
+A hypergraph representation retains each paper as a single hyperedge over its
+concept set, rendering three quantities expressible. Higher-order co-occurrence:
+whether three concepts have appeared jointly, as distinct from all three pairs
+having appeared separately — precisely the configuration the parent-set units
+approximated using triangles. Simplicial closure: whether an open triple closes
+into a full co-mention prior to a birth. And arity-weighted exposure: the
+fractional weighting employed here distributes a paper's mass over *C*(*k*,2)
+pairs, which is a compensation for a representation unable to retain the paper
+intact.
 
 The two directions compose. A hierarchical hypergraph — hyperedges over a
 depth-annotated concept tree — is the natural object for this question, and the
-flat pairwise graph used here is best understood as its projection, adopted for
-tractability.
+flat pairwise graph employed here is best understood as its projection, adopted
+for tractability.
 
-### 5.3 Closing the remaining headroom
+### 5.3 The residual headroom
 
-The oracle gives a specific target: 24% of achievable gain is unreached. Two
-explanations are separable with existing data. The first is that missing births
-attach to nothing — 25–48% of births per origin are orphans, and `capsule network`
-orphaned in 2017 because its parents (`capsnet`, `dynamic routing`) had not
-cleared the vocabulary floor. If a birth's parentage is itself too new to be a
-node, no node-level method can locate it, and the ceiling is a property of the
-unit system rather than the features. The second is sense ambiguity, as with
+The oracle analysis identifies a specific target: 24% of achievable gain is
+unreached. Two explanations are separable using existing data. The first is that
+unlocalised births attach to nothing — between 25% and 48% of births per origin
+are orphans, and `capsule network` was orphaned in 2017 because its parents
+(`capsnet`, `dynamic routing`) had not yet satisfied the vocabulary frequency
+criterion. Where a birth's parentage is itself too recent to constitute a node, no
+node-level method can locate it, and the ceiling is a property of the unit system
+rather than of the features. The second is sense ambiguity, as observed for
 `transformer` and `diffusion model`. Distinguishing these would establish whether
 the ceiling is structural or lexical.
 
 ### 5.4 Prospective validation
 
-All results are retrospective. The registry is complete through 2024, so origin
-2024 at horizon 1 becomes gradeable once 2026's papers exist. The specification to
-be graded is declared in the repository: `k=4`, `K=10`, the own-series feature
-family, within-region normalisation, top-degree as the baseline to beat, and
-recall@10 as the primary metric.
+All results reported here are retrospective. The registry is complete through
+2024, so origin 2024 at horizon 1 becomes gradeable once papers from 2026 are
+available. The specification to be graded is declared in the repository: *k*=4,
+the own-series feature family, within-region normalisation, deterministic
+top-degree as the comparison baseline, and recall@*K* as the primary metric. The
+validation evidence in §4.2 indicates *K*=20 in preference to the *K*=10 used for
+the present test scoring, and this constitutes a declared amendment to be graded
+prospectively rather than a retrospective adjustment.
 
 ---
 
@@ -462,9 +527,9 @@ Foster, J. G., Rzhetsky, A., & Evans, J. A. (2015). Tradition and innovation in
 scientists' research strategies. *American Sociological Review*, 80(5), 875–908.
 doi:10.1177/0003122415601618
 
-Frantzi, K., Ananiadou, S., & Mima, H. (2000). Automatic recognition of
-multi-word terms: the C-value/NC-value method. *International Journal on Digital
-Libraries*, 3(2), 115–130. doi:10.1007/s007999900023
+Frantzi, K., Ananiadou, S., & Mima, H. (2000). Automatic recognition of multi-word
+terms: the C-value/NC-value method. *International Journal on Digital Libraries*,
+3(2), 115–130. doi:10.1007/s007999900023
 
 Kuhn, T., Perc, M., & Helbing, D. (2014). Inheritance patterns in citation
 networks reveal scientific memes. *Physical Review X*, 4(4), 041036.
@@ -481,16 +546,15 @@ word representations in vector space. arXiv:1301.3781 (ICLR 2013 Workshop Track)
 
 Mikolov, T., Sutskever, I., Chen, K., Corrado, G. S., & Dean, J. (2013).
 Distributed representations of words and phrases and their compositionality.
-*NIPS 26*, 3111–3119.
+*Advances in Neural Information Processing Systems 26*, 3111–3119.
 
 Palla, G., Derényi, I., Farkas, I., & Vicsek, T. (2005). Uncovering the
 overlapping community structure of complex networks in nature and society.
 *Nature*, 435(7043), 814–818. doi:10.1038/nature03607
 
-Rose, S., Engel, D., Cramer, N., & Cowley, W. (2010). Automatic keyword
-extraction from individual documents. In M. W. Berry & J. Kogan (Eds.), *Text
-Mining: Applications and Theory*, ch. 1, 1–20. Wiley.
-doi:10.1002/9780470689646.ch1
+Rose, S., Engel, D., Cramer, N., & Cowley, W. (2010). Automatic keyword extraction
+from individual documents. In M. W. Berry & J. Kogan (Eds.), *Text Mining:
+Applications and Theory*, ch. 1, 1–20. Wiley. doi:10.1002/9780470689646.ch1
 
 Salatino, A. A., & Motta, E. (2016). Detection of embryonic research topics by
 analysing semantic topic networks. In *SAVE-SD 2016*, LNCS, 131–146.
@@ -500,9 +564,8 @@ Salatino, A. A., Osborne, F., & Motta, E. (2017). How are topics born?
 Understanding the research dynamics preceding the emergence of new areas. *PeerJ
 Computer Science*, 3, e119. doi:10.7717/peerj-cs.119
 
-Salatino, A. A., Osborne, F., & Motta, E. (2018). AUGUR: Forecasting the
-emergence of new research topics. In *JCDL '18*, 303–312.
-doi:10.1145/3197026.3197052
+Salatino, A. A., Osborne, F., & Motta, E. (2018). AUGUR: Forecasting the emergence
+of new research topics. In *JCDL '18*, 303–312. doi:10.1145/3197026.3197052
 
 Schwartz, A. S., & Hearst, M. A. (2003). A simple algorithm for identifying
 abbreviation definitions in biomedical text. *Pacific Symposium on Biocomputing*,

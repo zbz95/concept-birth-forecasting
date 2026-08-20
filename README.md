@@ -5,29 +5,33 @@ co-occurrence graph from 269,814 arXiv abstracts in NLP and computer vision
 (1994–2025), partitions it into overlapping regions, and asks a concrete
 forecasting question:
 
-> Given a region of ~100 concepts at time *T*, name 10 of them and claim the next
-> concept born in that region will be related to those 10. Then wait and check.
+> At origin year *T*, rank the members of a region by their estimated propensity to
+> be a parent of a concept born there in a later window, select the top *K*, and
+> evaluate the selection against the parents actually observed.
 
-**[→ Read the full report](report.md)**
+*K* is a parameter of the evaluation, not of the method; it is swept over
+{1, 2, 3, 5, 10, 20, 50}, with lift over random maximised at *K*=20.
+
+**Full report: [`report.md`](report.md)**
 
 ## Headline result
 
-On held-out test years (2022–2023), naming 10 nodes per region:
+Held-out test years (2022–2023), *K*=10 (the value fixed before the sweep):
 
 | horizon | random | degree baseline | model | lift | 95% CI |
 |---:|---:|---:|---:|---:|---|
 | 1 | 0.144 | 0.196 | **0.250** | 1.73× | [1.46, 2.07] |
 | 2 | 0.152 | 0.213 | **0.321** | 2.10× | [1.48, 2.83] |
 
-Lift rises with difficulty — naming 10 of a 600-concept region beats chance by
-**4.78×**.
+Lift increases with region size, reaching **4.78×** for regions above 300
+members, where a fixed selection covers a small fraction of the candidate set.
 
-But the mechanism is a ceiling result. An oracle with full hindsight reaches only
-3.12×, and plain *magnitude* (paper count + degree) already captures **76% of the
-achievable gain**. Across ~40 structural features, everything measuring size
-predicts at 2.1–2.6×; everything measuring shape or dynamics predicts at 1.0–1.2×.
-Burt's structural holes are real in isolation (1.60× after magnitude is regressed
-out) but add **0.0%** in combination.
+The mechanism is a ceiling result. An oracle with complete hindsight attains
+3.12×, of which *magnitude* (paper count and degree) alone captures **76%**.
+Across ~40 structural features, those measuring magnitude attain 2.1–2.6× and
+those measuring shape or temporal dynamics attain 1.0–1.2×. Burt's structural
+holes are supported in isolation (1.60× after magnitude is partialled out) but
+contribute no measurable improvement in combination.
 
 ## What's here
 
