@@ -46,12 +46,16 @@ judge/                 the LLM-judge kit: prompt, batches, verdicts, hindsight a
 data/registry/         the birth registry (the durable artifact)
 ```
 
-Large intermediates (`data/raw`, `data/interim`, `data/graphs`) are gitignored and
-rebuildable from source.
+**No data is shipped.** Everything under `data/` and the LLM-judge payload under
+`judge/` is derived and rebuildable from the arXiv snapshot by running the
+pipeline below. What is tracked is the code that produces it, the configuration
+that parameterises it, the reports that describe it, and the append-only logs that
+record every decision.
 
 ## The birth registry
 
-`data/registry/births.parquet` — 100,295 concepts with dated coinage and
+`data/registry/births.parquet` (produced by `src/extraction/registry.py`) —
+100,295 concepts with dated coinage and
 crystallisation, author-group counts, fates, and censoring flags. Built causally:
 a concept crystallises in the first year *t* with ≥5 papers in each of *t..t+1*
 across ≥2 disjoint author groups, computed from data ≤ *t*+1 only.
@@ -66,6 +70,15 @@ papers.
 
 ## Reproducing
 
+The arXiv snapshot is CC0 and downloads without credentials:
+
+```bash
+curl -L -o data/raw/arxiv-snapshot-v299.zip \
+  "https://www.kaggle.com/api/v1/datasets/download/Cornell-University/arxiv"
+```
+
+Then, in order — each stage writes a manifest and the next reads it:
+
 ```bash
 uv sync
 uv run python src/extraction/ingest.py          # corpus
@@ -79,7 +92,14 @@ uv run python src/models/attachment.py          # attach births
 uv run python src/models/layer2_split.py        # localisation, train/val/test
 ```
 
-The arXiv snapshot is CC0 and downloads without credentials.
+Runtime is a few hours on 8 cores / 12 GB. The two slow stages are the spaCy
+token cache (~30 min) and the dictionary re-scan (~10 min); everything else is
+DuckDB and finishes in minutes.
+
+The LLM-judge stage is optional and off by default in a fresh clone. To reproduce
+it, regenerate the term export as described in `judge/README.md`, judge the
+batches, and run `src/extraction/judge_ingest.py` — which also runs the hindsight
+audit that must pass before the verdicts are applied.
 
 ## How this was built
 
